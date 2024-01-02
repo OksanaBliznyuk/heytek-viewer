@@ -44,7 +44,7 @@ const EquipmentList = () => {
             {equipment.map((item) => (
               <TableRow key={item.equipment_id}>
                      <TableCell>
-                     <Button className="info-icon" onClick={handleButtonClick}>
+                     <Button className="info-icon" onClick={() => handleButtonClick(item)}>
                       <InfoOutlinedIcon />
                     </Button>
 
