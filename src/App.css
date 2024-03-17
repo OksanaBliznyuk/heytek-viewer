@@ -9,20 +9,17 @@ body {
 
 .main {
   width: 100vw;
-  height: 80vh;
-  margin-top: 20vh;
+  height: 70vh;
+  margin-top: 10vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-color: #fff;
+  background-color: white;
 }
 
 .heading {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  padding-right: 30vw;
+  background-color: white;
 }
 
 h1 {
@@ -35,35 +32,36 @@ h2 {
   font-family: var(--font-family--text, "Nunito Sans", sans-serif);
   font-size: 1.1625rem;
   font-weight: 400;
-  color: #1e1e1e;
-  text-align: left;
-  background-color: #fff;
+  color: "#115293";
+  text-align: center;
 }
 
-h3 {
-  font-weight: 550;
-  font-size: 15px;
-
-}
-
-h4 {
-  color: rgb(51, 130, 233);
-  font-weight: 400;
+.homepage-h5 {
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  letter-spacing: 1px;
+  margin-top: -2%;
+  font-size: 20px;
+  font-weight: 100;
+  color: #9c27b0;
 }
 
 .main-image {
-  width: 50vw;
-  height: 50vh;
+  width: 40vw;
+  height: 40vh;
   background-size: 100%;
 }
 
-.link-btn:hover {
-  background-color: #8db9a0;
+.sticky-header {
+  position: sticky;
+  top: 0;
+  background-color: white;
+  z-index: 1000;
 }
 
-.info-icon {
-  width: 80;
+.modal-img {
+  width: 70%;
+  height: 50%;
+  background-size: 100%;
+  align-items: center;
+  text-align: center;
 }
-
-
-

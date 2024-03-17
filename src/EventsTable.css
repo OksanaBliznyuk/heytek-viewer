@@ -1,0 +1,31 @@
+.events-container {
+}
+
+h4 {
+  color: #1565c0;
+  font-weight: 400;
+  font-size: 30px;
+}
+
+.eventstable-header {
+  width: 90%;
+  height: auto;
+  padding-left: 10vw;
+}
+
+.events-main {
+  width: 80%;
+  height: auto;
+  margin-top: 20px;
+  margin-left: 10%;
+  align-items: center;
+}
+
+.events-icons {
+  background-color: #eeeeee;
+  width: auto;
+  text-align: center;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: row;
+}

@@ -1,9 +1,11 @@
 //App.js
-import './App.css';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import RentHomepage from './RentHomepage'; // Sjekk at banen til RentHomepage er korrekt
+import "./App.css";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import RentHomepage from "./RentHomepage"; // Sjekk at banen til RentHomepage er korrekt
+import EquipmentList from "./Equipmentlist.js";
+import AdminPage from "./AdminPage";
+import EventsTable from './EventsTable'; // Import your EventsTable component
 
-import EquipmentList from './Equipmentlist.js';
 
 function App() {
   return (
@@ -12,9 +14,10 @@ function App() {
         <Routes>
           <Route path="/" element={<RentHomepage />} />
           <Route path="/EquipmentList" element={<EquipmentList />} />
+          <Route path="/events-table" element={<EventsTable />}exact />
+          <Route path="/admin" element={<AdminPage />} exact />
         </Routes>
-        </Router>
-   
+      </Router>
     </div>
   );
 }

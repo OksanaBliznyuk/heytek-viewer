@@ -1,0 +1,17 @@
+/* styles.css */
+
+/* Juster størrelsen på kalenderen */
+.react-datetime-picker__wrapper {
+    font-size: 16px;
+  }
+  
+  /* Juster størrelsen på kalenderknappen */
+  .react-datetime-picker__button:enabled:hover,
+  .react-datetime-picker__button:enabled:focus {
+    background-color: #e0e0e0;
+  }
+  
+  /* Juster størrelsen på input-feltet */
+  .react-datetime-picker__inputGroup {
+    width: 200px;
+  }

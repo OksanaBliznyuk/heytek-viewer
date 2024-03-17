@@ -2,15 +2,16 @@ import * as React from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Modal from "@mui/material/Modal";
-//import corporative from "../assets/images/corporative.jpg";
+import corporative from "./assets/images/pixel-cells.png";
 import EquipmentList from "./Equipmentlist";
+import Login from "./components/Login";
 
 const style = {
   position: "absolute",
-  top: "49%",
+  top: "47%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 900,
+  width: 1000,
   height: 650,
   bgcolor: "background.paper",
   border: "1px solid #fff",
@@ -19,44 +20,57 @@ const style = {
 };
 
 export default function BasicModal() {
-  const [open, setOpen] = React.useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const [loginModalOpen, setLoginModalOpen] = React.useState(false);
+  const [hovered, setHovered] = React.useState(false);
+
+  const handleOpen = () => setLoginModalOpen(true);
+  const handleClose = () => setLoginModalOpen(false);
 
   return (
     <>
       <div className="main">
         <div className="heading">
-          <h1>HeyTek</h1>
-          <Button
-            className="link-btn"
-            onClick={handleOpen}
-            style={{ backgroundColor: "#d7eace", color: "#1e1e1e", transition: "background-color 0.3s, color 0.3s" }}
-          >
-            Låne og innlevere utstyr
-          </Button>
+          <h1>HeyTekApp</h1>
         </div>
-      {/* <div className="main-image">
+        <div className="homepage-h5">
+          <h5>KUN ANSATTE</h5>
+        </div>
+        <div className="main-image">
           {" "}
           <img
             src={corporative}
             alt=""
-            style={{ width: "100%", height: "100%" }}
+            style={{ width: "100%", height: "100%", marginTop: "0" }}
           />
-  </div>*/}
-
-        <div>
-          <Modal
-            open={open}
-            onClose={handleClose}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
-          >
-            <Box sx={style}>
-              <EquipmentList />
-            </Box>
-          </Modal>
         </div>
+        <Button
+          size="large"
+          className="link-btn"
+          onClick={handleOpen}
+          onMouseEnter={() => setHovered(true)}
+          onMouseLeave={() => setHovered(false)}
+          style={{
+            backgroundColor: hovered ? "#9c27b0" : "#b2dfdb",
+            color: hovered ? "#fff" : "#1e1e1e",
+            transition: "background-color 0.3s, color 0.3s",
+            marginTop: 60,
+            width: "200px",
+            minHeight: "60px",
+            fontSize: "16px",
+          }}
+        >
+          Logg inn
+        </Button>
+        <Modal
+          open={loginModalOpen}
+          onClose={handleClose}
+          aria-labelledby="numeric-login-modal"
+          aria-describedby="numeric-login-form"
+        >
+          <Box sx={style} onClick={(e) => e.stopPropagation()}>
+            <Login onLogin={handleClose} onCancel={handleClose} />
+          </Box>
+        </Modal>
       </div>
     </>
   );
