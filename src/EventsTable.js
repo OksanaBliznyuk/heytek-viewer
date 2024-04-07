@@ -18,9 +18,10 @@ import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import ClearIcon from "@mui/icons-material/Clear";
 import AddIcon from "@mui/icons-material/Add";
+import EquipmentList from "./Equipmentlist";
 
 
-const EventsTable = () => {
+const EventsTable = ({eqId}) => {
   const getInitialEditedFields = () => {
     if (editingRowId === null) {
       return {}; // Tomt objekt hvis ikke i redigeringsmodus
@@ -50,6 +51,7 @@ const EventsTable = () => {
   const [isAddingNewItem, setIsAddingNewItem] = useState(false);
   const [page, setPage] = useState(0); // Tilstand for å lagre gjeldende side
   const [rowsPerPage, setRowsPerPage] = useState(5); // Tilstand for å lagre antall rader per side
+  const [updateKey, setUpdateKey] = useState(0); // Oppdateringsnøkkel
 
   const handleAddNewItem = () => {
     setIsAddingNewItem(true);
@@ -80,7 +82,7 @@ const EventsTable = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8099/events")
+      .get("http://localhost:8099/events?equipment_id="+eqId)
       .then((response) => {
         if (response.data && Array.isArray(response.data.events)) {
           setEvents(response.data.events);
@@ -91,20 +93,22 @@ const EventsTable = () => {
       .catch((error) => {
         console.error("Error fetching events:", error.message);
       });
-  }, []);
+  }, [eqId, updateKey]);
 
   // Ny funksjon for å sende POST-forespørsel og lagre en ny hendelse
   const saveNewEvent = async () => {
+    console.log("Saving event with data:", editedFields); // Legg til denne for å debugge
     try {
       const response = await axios.post("http://localhost:8099/events", {
         eventuser_name: editedFields.eventuser_name,
         event_quantity: editedFields.event_quantity,
         event_date: editedFields.event_date,
         event_comment: editedFields.event_comment,
-        eq_id: editedFields.eq_id,
+        eq_id: eqId,
         event_type: "reservation" // Hardkodet til reservasjon, kan endres etter behov
       });
       console.log("New event saved:", response.data);
+      setUpdateKey(prevKey => prevKey + 1); // Oppdater oppdateringsnøkkelen for å utløse re-henting av data
       // Legg til logikk for å oppdatere UI eller hente ny data fra serveren hvis nødvendig
     } catch (error) {
       console.error("Error saving new event:", error.message);
@@ -172,7 +176,7 @@ const EventsTable = () => {
           </Button>
         </div>
         <div className="events-main">
-          {events.length > 0 ? ( // Legg til denne betingelsen for å sjekke om det er data å vise
+          {events.length >= 0 ? ( // Legg til denne betingelsen for å sjekke om det er data å vise
             <TableContainer
               component={Paper}
               style={{

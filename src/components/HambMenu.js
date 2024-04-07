@@ -53,7 +53,7 @@ const StyledMenu = styled((props) => (
   },
 }));
 
-export default function CustomizedMenus() {
+export default function CustomizedMenus({eqId }) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState(""); 
@@ -145,7 +145,7 @@ export default function CustomizedMenus() {
             maxHeight: "80%",
           }}
         >
-           {modalContent === "reserver" && <EventsTable />}
+           {modalContent === "reserver" && <EventsTable eqId={eqId}/>}
           {modalContent === "lånUt" && <LoanOut />}
           {modalContent === "leverInn" && <DeliverEquipment />}
           <Button onClick={handleCloseModal}>Lukk vindu</Button>

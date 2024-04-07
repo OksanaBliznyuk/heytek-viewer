@@ -38,7 +38,7 @@ const style = {
   zIndex: 1001,
 };
 
-const EquipmentList = ({ item }) => {
+const EquipmentList = () => {
   const [equipment, setEquipment] = useState([]);
   //const [open, setOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
@@ -198,7 +198,7 @@ const EquipmentList = ({ item }) => {
                   {/*Open menu and events */}
                   <TableCell>
                     {item.equipment_status}
-                    <HambMenu />
+                    <HambMenu eqId={item.equipment_id}/>
                   </TableCell>
                 </TableRow>
               ))}
