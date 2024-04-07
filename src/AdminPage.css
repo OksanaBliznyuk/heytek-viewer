@@ -51,7 +51,6 @@ h4 {
 }
 
 .handle-cell {
- 
   align-items: center;
   text-align: center;
   width: 120px;
@@ -71,6 +70,14 @@ h4 {
   width: 120px;
   text-align: center;
   border-radius: 5px;
+}
+
+.pagination-and-btn {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 2vh;
 }
 
 /*.quantity-cell {

@@ -5,9 +5,10 @@ import Button from "@mui/material/Button";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import ManageSearchIcon from "@mui/icons-material/ManageSearch";
-import { Link } from "react-router-dom";
 import Modal from "@mui/material/Modal";
-import AdminLogin from "./AdminLogin";
+import EventsTable from "../EventsTable";
+import LoanOut from "../LoanOut";
+import DeliverEquipment from "../DeliverEquipment";
 
 const StyledMenu = styled((props) => (
   <Menu
@@ -54,8 +55,8 @@ const StyledMenu = styled((props) => (
 
 export default function CustomizedMenus() {
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
   const [modalOpen, setModalOpen] = useState(false);
+  const [modalContent, setModalContent] = useState(""); 
   const open = Boolean(anchorEl);
 
   const handleClick = (event) => {
@@ -65,25 +66,24 @@ export default function CustomizedMenus() {
   const handleClose = () => {
     setAnchorEl(null);
   };
+  const StyledModal = styled(Modal)(({ theme }) => ({
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  }));
 
-  const handleLogin = () => {
-    setIsLoggedIn(true);
-    handleClose();
-  };
+  //const handleOpenModal = () => {
+    //setModalOpen(true);
+    //handleClose(); // Lukk menyen når modalen åpnes
+  //};
 
-  const handleOpenModal = () => {
+  const handleOpenModal = (side) => {
+    setModalContent(side);
     setModalOpen(true);
+    handleClose(); // Lukk menyen når modalen åpnes
   };
-
+  
   const handleCloseModal = () => {
-    setModalOpen(false);
-  };
-
-  //login
-
-  const handleAdminLogin = () => {
-    // Implementer logikken som skal utføres når numerisk pålogging er vellykket
-    setIsLoggedIn(true);
     setModalOpen(false);
   };
 
@@ -118,22 +118,39 @@ export default function CustomizedMenus() {
           open={open}
           onClose={handleClose}
         >
-          <MenuItem component={Link} to="/events-table">
+          <MenuItem onClick={() => handleOpenModal("reserver")} disableRipple>
             Reserver
           </MenuItem>
-
-          <MenuItem onClick={handleClose} disableRipple>
+          <MenuItem onClick={() => handleOpenModal("lånUt")} disableRipple>
+            Lån ut
+          </MenuItem>
+          <MenuItem onClick={() => handleOpenModal("leverInn")} disableRipple>
             Lever inn
           </MenuItem>
-          <MenuItem onClick={handleOpenModal} disableRipple>
-            Administrer utlån
-          </MenuItem>
         </StyledMenu>
+        {/* Modal for EventsTable */}
       </div>
-      {/* Modal for AdminLogin */}
-      <Modal open={modalOpen} onClose={handleCloseModal}>
-        <AdminLogin onLogin={handleAdminLogin} />
-      </Modal>
+      <StyledModal
+        open={modalOpen}
+        onClose={handleCloseModal}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <div
+          style={{
+            backgroundColor: "white",
+            padding: 20,
+            outline: "none",
+            width: "80%",
+            maxHeight: "80%",
+          }}
+        >
+           {modalContent === "reserver" && <EventsTable />}
+          {modalContent === "lånUt" && <LoanOut />}
+          {modalContent === "leverInn" && <DeliverEquipment />}
+          <Button onClick={handleCloseModal}>Lukk vindu</Button>
+        </div>
+      </StyledModal>
     </>
   );
 }

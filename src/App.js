@@ -1,10 +1,12 @@
 //App.js
 import "./App.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import RentHomepage from "./RentHomepage"; // Sjekk at banen til RentHomepage er korrekt
+import RentHomepage from "./RentHomepage"; 
 import EquipmentList from "./Equipmentlist.js";
 import AdminPage from "./AdminPage";
-import EventsTable from './EventsTable'; // Import your EventsTable component
+import EventsTable from './EventsTable'; 
+import DeliverEquipment from './DeliverEquipment';
+import LoanOut from './LoanOut';
 
 
 function App() {
@@ -15,6 +17,8 @@ function App() {
           <Route path="/" element={<RentHomepage />} />
           <Route path="/EquipmentList" element={<EquipmentList />} />
           <Route path="/events-table" element={<EventsTable />}exact />
+          <Route path="/LoanOut" element={<LoanOut />}exact />  
+          <Route path="/DeliverEquipment" element={<DeliverEquipment />}exact />
           <Route path="/admin" element={<AdminPage />} exact />
         </Routes>
       </Router>

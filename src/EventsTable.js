@@ -1,8 +1,6 @@
 // EventsTable.js
 import React, { useState, useEffect } from "react";
 import "./EventsTable.css";
-import { Link } from "react-router-dom";
-import EquipmentlistBtn from "./components/EquipmentlistBtn";
 import axios from "axios";
 import {
   Table,
@@ -14,11 +12,13 @@ import {
   Paper,
   Button,
   TextField,
+  TablePagination, 
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import ClearIcon from "@mui/icons-material/Clear";
 import AddIcon from "@mui/icons-material/Add";
+
 
 const EventsTable = () => {
   const getInitialEditedFields = () => {
@@ -48,6 +48,8 @@ const EventsTable = () => {
   const [editingRowId, setEditingRowId] = useState(null);
   const [editedFields, setEditedFields] = useState(getInitialEditedFields());
   const [isAddingNewItem, setIsAddingNewItem] = useState(false);
+  const [page, setPage] = useState(0); // Tilstand for å lagre gjeldende side
+  const [rowsPerPage, setRowsPerPage] = useState(5); // Tilstand for å lagre antall rader per side
 
   const handleAddNewItem = () => {
     setIsAddingNewItem(true);
@@ -91,6 +93,42 @@ const EventsTable = () => {
       });
   }, []);
 
+  // Ny funksjon for å sende POST-forespørsel og lagre en ny hendelse
+  const saveNewEvent = async () => {
+    try {
+      const response = await axios.post("http://localhost:8099/events", {
+        eventuser_name: editedFields.eventuser_name,
+        event_quantity: editedFields.event_quantity,
+        event_date: editedFields.event_date,
+        event_comment: editedFields.event_comment,
+        eq_id: editedFields.eq_id,
+        event_type: "reservation" // Hardkodet til reservasjon, kan endres etter behov
+      });
+      console.log("New event saved:", response.data);
+      // Legg til logikk for å oppdatere UI eller hente ny data fra serveren hvis nødvendig
+    } catch (error) {
+      console.error("Error saving new event:", error.message);
+    }
+  };
+
+  // Legg til en ny hendelsesbehandler for å håndtere lagring av ny hendelse
+  const handleSaveNewEvent = () => {
+    saveNewEvent();
+    setIsAddingNewItem(false); // Lukk redigeringsmodus etter at hendelsen er lagret
+  };
+//----------------------------------------------------------------------------------
+
+  // Funksjon for å håndtere endring av side
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  // Funksjon for å håndtere endring av antall rader per side
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10)); // Konverterer verdi til heltall
+    setPage(0); // Tilbakestill siden til første side når antall rader per side endres
+  };
+
   const handleEditClick = (rowId) => {
     setEditingRowId(rowId);
   };
@@ -119,12 +157,15 @@ const EventsTable = () => {
     <>
       <div className="events-container">
         <div className="eventstable-header">
-          <h4>Reserver utstyr her</h4>
+          <h1 className="eventstable-h1">
+            Sjekk reservasjon og reserver utstyr her (EVENTS TABLE)
+          </h1>
           <Button
             className="add-btn"
             variant="contained"
             color="secondary"
             size="small"
+            style={{ width: 200, height: 40 }}
             onClick={() => setIsAddingNewItem(true)}
           >
             <AddIcon /> Legg til reservasjon
@@ -151,8 +192,11 @@ const EventsTable = () => {
                       <h3>Antall</h3>
                     </TableCell>
                     <TableCell>
-                      <h3>Utlånsdato</h3>
+                      <h3>Start reservering</h3>
                     </TableCell>
+                    {/*<TableCell>
+                      <h3>Slutt reservering</h3>
+                    </TableCell>*/}
                     <TableCell>
                       <h3>Komment</h3>
                     </TableCell>
@@ -165,9 +209,8 @@ const EventsTable = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {/*Ny rad for å legge til utstyr vil bli her*/}
-                  {/*Ny rad for å legge til utstyr vil bli her*/}
-                  {isAddingNewItem && (
+     {/*Ny rad for å legge til utstyr vil bli her*/}
+     {isAddingNewItem && (
                     <TableRow key={editingRowId}>
                       <TableCell>
                         <TextField
@@ -185,7 +228,6 @@ const EventsTable = () => {
                           }
                         />
                       </TableCell>
-                      {/* Fortsett slik for resten av feltene */}
                       <TableCell>
                         <TextField
                           value={editedFields.event_date}
@@ -212,7 +254,7 @@ const EventsTable = () => {
                       </TableCell>
                       <TableCell>
                         <div className="events-icons">
-                          <Button onClick={handleSaveClick}>
+                          <Button onClick={handleSaveNewEvent}>
                             <SaveIcon />
                           </Button>
                           <Button onClick={handleCancelEdit}>
@@ -321,12 +363,15 @@ const EventsTable = () => {
           ) : (
             <p>Ingen hendelser å vise.</p>
           )}
-
-          <div>
-            <Link to="/Equipmentlist">
-              <EquipmentlistBtn />
-            </Link>
-          </div>
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 25]} // Alternativer for antall rader per side
+            component="div"
+            count={events.length} // Totalt antall rader i tabellen
+            rowsPerPage={rowsPerPage} // Antall rader per side
+            page={page} // Gjeldende side
+            onPageChange={handleChangePage} // Hendelsesbehandling for sideendring
+            onRowsPerPageChange={handleChangeRowsPerPage} // Hendelsesbehandling for endring av antall rader per side
+          />
         </div>
       </div>
     </>

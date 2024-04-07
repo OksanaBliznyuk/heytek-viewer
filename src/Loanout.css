@@ -1,0 +1,26 @@
+body {
+  width: 100%;
+  height: auto;
+}
+
+.loanout-container {
+  background-color: rgb(197, 228, 217);
+}
+
+.lounout-header {
+  width: 100%;
+  height: 60px;
+}
+
+.loanout-h1 {
+    font-family:Verdana, Geneva, Tahoma, sans-serif;
+    font-weight: 100;
+    font-size: 25px;
+}
+
+
+.loanout-main {
+  width: 100%;
+  height: 350px;
+}
+

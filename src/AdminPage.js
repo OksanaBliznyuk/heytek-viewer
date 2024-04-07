@@ -16,6 +16,7 @@ import {
   Modal,
   TextField,
   IconButton,
+  TablePagination,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
@@ -31,6 +32,8 @@ const AdminPage = ({}) => {
   const [editingItem, setEditingItem] = useState(null);
   const [editedData, setEditedData] = useState({});
   const [isAddingItem, setIsAddingItem] = useState(false);
+  const [page, setPage] = useState(0); // Tilstand for å lagre gjeldende side
+  const [rowsPerPage, setRowsPerPage] = useState(10); // Tilstand for å lagre antall rader per side
 
   const handleOpen = (item) => {
     setSelectedItem(item);
@@ -120,11 +123,21 @@ const AdminPage = ({}) => {
     setIsAddingItem(false);
   };
 
+  const handleChangePage = (admin, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (admin) => {
+    setRowsPerPage(parseInt(admin.target.value, 10));
+    setPage(0);
+  };
+
+
   return (
     <>
       <div className="admin-container" style={{ overflow: "auto" }}>
         <div className="admin-header">
-          <h4>Adminside</h4>
+          <h4>Admin Side</h4>
           <h3 className="admin-h3">Utstyrslisten</h3>
           {/*+Legg til btn */}
           <Button
@@ -313,11 +326,24 @@ const AdminPage = ({}) => {
                 </TableBody>
               </Table>
             </TableContainer>
-          </div>
-          <div>
+
+            {/*PAGINERING*/}
+            <div className="pagination-and-btn">
+            <div>
             <Link to="/Equipmentlist">
               <EquipmentlistBtn />
             </Link>
+            </div>
+        <TablePagination
+          rowsPerPageOptions={[10, 25]} 
+          component="div"
+          count={equipment.length} // Totalt antall rader i tabellen
+          rowsPerPage={rowsPerPage} // Antall rader per side
+          page={page} // Gjeldende side
+          onPageChange={handleChangePage} // Hendelsesbehandling for sideendring
+          onRowsPerPageChange={handleChangeRowsPerPage} // Hendelsesbehandling for endring av antall rader per side
+        />
+          </div>
           </div>
         </div>
       </div>

@@ -15,8 +15,10 @@ import {
   Button,
   Modal,
   Box,
+  TablePagination,
 } from "@mui/material";
 import HambMenu from "./components/HambMenu.js";
+import AdminLogin from "./components/AdminLogin";
 
 //Info vindu style:
 const style = {
@@ -41,6 +43,8 @@ const EquipmentList = ({ item }) => {
   //const [open, setOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [openModalMap, setOpenModalMap] = useState({});
+  const [page, setPage] = useState(0); // Tilstand for å lagre gjeldende side
+  const [rowsPerPage, setRowsPerPage] = useState(10); // Tilstand for å lagre antall rader per side
 
   const overlayStyle = {
     position: "fixed",
@@ -80,6 +84,31 @@ const EquipmentList = ({ item }) => {
 
   const handleButtonClick = (item) => {
     handleOpen(item);
+  };
+
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const handleOpenModal = () => {
+    setModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+  };
+
+  const handleAdminLogin = () => {
+    // Implementer logikk for innlogging her
+    console.log("Innlogging vellykket");
+    // Sett eventuelle tilstander eller gjør andre handlinger etter innlogging
+  };
+
+  const handleChangePage = (equipment, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (equipment) => {
+    setRowsPerPage(parseInt(equipment.target.value, 10));
+    setPage(0);
   };
 
   return (
@@ -133,7 +162,7 @@ const EquipmentList = ({ item }) => {
                       aria-labelledby="equipment-modal-title"
                       aria-describedby="equipment-modal-description"
                     >
-                      <Box sx={{ ...style, width: 500, height: 500 }}>
+                      <Box sx={{ ...style, width: 500, height: 500, textAlign: "center" }}>
                         {selectedItem && (
                           <>
                             <h2 id="equipment-modal-title">
@@ -176,7 +205,19 @@ const EquipmentList = ({ item }) => {
             </TableBody>
           </Table>
         </TableContainer>
-        <div>
+
+        {/*PAGINERING*/}
+        <TablePagination
+        className="PaginationContainer"
+          rowsPerPageOptions={[10, 25]} // Alternativer for antall rader per side
+          component="div"
+          count={equipment.length} // Totalt antall rader i tabellen
+          rowsPerPage={rowsPerPage} // Antall rader per side
+          page={page} // Gjeldende side
+          onPageChange={handleChangePage} // Hendelsesbehandling for sideendring
+          onRowsPerPageChange={handleChangeRowsPerPage} // Hendelsesbehandling for endring av antall rader per side
+        />
+        <div className="btn">
           {/*Logg ut btn*/}
           <Link to="/">
             <div className="logout-btn">
@@ -185,6 +226,14 @@ const EquipmentList = ({ item }) => {
               </Button>
             </div>
           </Link>
+          <div className="admin-btn">
+            <Button size="small" variant="outlined" onClick={handleOpenModal}>
+              Administrer utlån
+            </Button>
+            <Modal open={modalOpen} onClose={handleCloseModal}>
+              <AdminLogin onLogin={handleAdminLogin} />
+            </Modal>
+          </div>
         </div>
       </div>
     </div>
