@@ -389,7 +389,7 @@ const EventsTable = ({ eqId }) => {
                             <IconButton onClick={handleSaveClick}>
                               <SaveIcon style={{ color: "#1565c0" }} />
                             </IconButton>
-                            <IconButton onClick={() => handleDeleteClick()}>
+                            <IconButton onClick={() => handleDeleteClick(event.event_id)}>
                               <DeleteIcon style={{ color: "#ab003c" }} />
                             </IconButton>
                             <IconButton onClick={() => handleCancelEdit(event)}>
