@@ -15,10 +15,12 @@ import {
   Button,
   Modal,
   Box,
-  TablePagination,
+  Backdrop,
 } from "@mui/material";
-import HambMenu from "./components/HambMenu.js";
 import AdminLogin from "./components/AdminLogin";
+import IconButton from "@mui/material/IconButton";
+import EventIcon from "@mui/icons-material/Event";
+import EventsTable from "./EventsTable";
 
 //Info vindu style:
 const style = {
@@ -38,13 +40,11 @@ const style = {
   zIndex: 1001,
 };
 
-const EquipmentList = () => {
+const EquipmentList = (eqId) => {
   const [equipment, setEquipment] = useState([]);
-  //const [open, setOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [openModalMap, setOpenModalMap] = useState({});
-  const [page, setPage] = useState(0); // Tilstand for å lagre gjeldende side
-  const [rowsPerPage, setRowsPerPage] = useState(10); // Tilstand for å lagre antall rader per side
+  const [eventsModalOpen, setEventsModalOpen] = useState(false);
 
   const overlayStyle = {
     position: "fixed",
@@ -102,13 +102,14 @@ const EquipmentList = () => {
     // Sett eventuelle tilstander eller gjør andre handlinger etter innlogging
   };
 
-  const handleChangePage = (equipment, newPage) => {
-    setPage(newPage);
+  // Hendelsesbehandler for å åpne modalen når EventIcon-knappen klikkes
+  const handleOpenEventsModal = () => {
+    setEventsModalOpen(true);
   };
 
-  const handleChangeRowsPerPage = (equipment) => {
-    setRowsPerPage(parseInt(equipment.target.value, 10));
-    setPage(0);
+  // Hendelsesbehandler for å lukke modalen
+  const handleCloseEventsModal = () => {
+    setEventsModalOpen(false);
   };
 
   return (
@@ -121,26 +122,27 @@ const EquipmentList = () => {
         <TableContainer
           component={Paper}
           style={{
-            maxHeight: "60vh",
+            maxHeight: "72vh",
             maxWidth: "90%",
             marginLeft: "5%",
             overflowY: "auto",
             zIndex: 1002,
+            marginTop: "-10px"
           }}
         >
           <Table size="medium">
             <TableHead className="sticky-header">
               <TableRow>
-                <TableCell>
+                <TableCell style={{paddingLeft: 120}}>
                   <h3>Utstyr</h3>
                 </TableCell>
-                <TableCell>
+                <TableCell style={{textAlign: "center"}}>
                   <h3>Antall</h3>
                 </TableCell>
-                <TableCell>
+                <TableCell style={{textAlign: "center"}}>
                   <h3>Tilgjengelig</h3>
                 </TableCell>
-                <TableCell>
+                <TableCell style={{textAlign: "center"}}>
                   <h3>Reservere</h3>
                 </TableCell>
               </TableRow>
@@ -162,7 +164,14 @@ const EquipmentList = () => {
                       aria-labelledby="equipment-modal-title"
                       aria-describedby="equipment-modal-description"
                     >
-                      <Box sx={{ ...style, width: 500, height: 500, textAlign: "center" }}>
+                      <Box
+                        sx={{
+                          ...style,
+                          width: 500,
+                          height: 500,
+                          textAlign: "center",
+                        }}
+                      >
                         {selectedItem && (
                           <>
                             <h2 id="equipment-modal-title">
@@ -193,12 +202,57 @@ const EquipmentList = () => {
 
                     {item.equipment_name}
                   </TableCell>
-                  <TableCell>{item.equipment_quantity}</TableCell>
-                  <TableCell>{item.equipment_available}</TableCell>
-                  {/*Open menu and events */}
-                  <TableCell>
-                    {item.equipment_status}
-                    <HambMenu eqId={item.equipment_id}/>
+                  <TableCell style={{textAlign: "center"}}>{item.equipment_quantity}</TableCell>
+                  <TableCell style={{textAlign: "center"}}>{item.equipment_available}</TableCell>
+                  <TableCell style={{textAlign: "center"}}>
+                    {/* Legg til EventIcon-knappen */}
+                    <IconButton onClick={handleOpenEventsModal}>
+                      <EventIcon
+                        style={{
+                          // Legg til den opprinnelige stilen for ikonet
+                          color: "#1769aa",
+                          width: 30,
+                          height: 30,
+                        }}
+                      />
+                    </IconButton>
+
+                    {/* Modal for EventsTable */}
+                    <Modal
+                      open={eventsModalOpen}
+                      onClose={handleCloseEventsModal}
+                      aria-labelledby="modal-modal-title"
+                      aria-describedby="modal-modal-description"
+                      BackdropComponent={Backdrop} // Bruk Backdrop som bakgrunnskomponent
+                      BackdropProps={{
+                        style: { backgroundColor: "rgba(128, 128, 128, 0.5)" },
+                        "&:hover": {
+                          backgroundColor: "#1976d2",
+                          borderRadius: "5px",
+                        },
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          position: "absolute",
+                          top: "50%",
+                          left: "50%",
+                          transform: "translate(-50%, -50%)",
+                          width: 1400,
+                          height: 580,
+                          bgcolor: "background.paper",
+                          boxShadow: 24,
+                          p: 4,
+                        }}
+                      >
+                        <EventsTable eqId={eqId} />
+                        <Button
+                          onClick={handleCloseEventsModal}
+                        >
+                          Lukk vindu
+                        </Button>
+                      </Box>
+                    </Modal>
                   </TableCell>
                 </TableRow>
               ))}
@@ -206,17 +260,6 @@ const EquipmentList = () => {
           </Table>
         </TableContainer>
 
-        {/*PAGINERING*/}
-        <TablePagination
-        className="PaginationContainer"
-          rowsPerPageOptions={[10, 25]} // Alternativer for antall rader per side
-          component="div"
-          count={equipment.length} // Totalt antall rader i tabellen
-          rowsPerPage={rowsPerPage} // Antall rader per side
-          page={page} // Gjeldende side
-          onPageChange={handleChangePage} // Hendelsesbehandling for sideendring
-          onRowsPerPageChange={handleChangeRowsPerPage} // Hendelsesbehandling for endring av antall rader per side
-        />
         <div className="btn">
           {/*Logg ut btn*/}
           <Link to="/">

@@ -1,4 +1,4 @@
-//AdminPageTEST
+//AdminPage
 import React, { useState, useEffect } from "react";
 import "./AdminPage.css";
 import axios from "axios";
@@ -16,12 +16,15 @@ import {
   Modal,
   TextField,
   IconButton,
+  TablePagination,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import SaveIcon from "@mui/icons-material/Save";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import ClearIcon from "@mui/icons-material/Clear";
+import EquipmentlistBtn from "./components/EquipmentlistBtn";
+import HambMenu from "./components/HambMenu";
 
 const AdminPage = ({}) => {
   const [equipment, setEquipment] = useState([]);
@@ -30,6 +33,8 @@ const AdminPage = ({}) => {
   const [editingItem, setEditingItem] = useState(null);
   const [editedData, setEditedData] = useState({});
   const [isAddingItem, setIsAddingItem] = useState(false);
+  const [page, setPage] = useState(0); // Tilstand for å lagre gjeldende side
+  const [rowsPerPage, setRowsPerPage] = useState(10); // Tilstand for å lagre antall rader per side
 
   const handleOpen = (item) => {
     setSelectedItem(item);
@@ -44,6 +49,7 @@ const AdminPage = ({}) => {
     }));
   };
 
+  //fetchEquipmentData
   useEffect(() => {
     const fetchEquipmentData = async () => {
       try {
@@ -101,6 +107,9 @@ const AdminPage = ({}) => {
     setEditingItem({
       equipment_name: "", // Sett standardverdier eller la være tom
       equipment_quantity: 0,
+      equipment_descr: "",
+      equipment_img: "",
+
       // ... andre felt for det nye utstyret
     });
   };
@@ -115,16 +124,26 @@ const AdminPage = ({}) => {
     setIsAddingItem(false);
   };
 
+  const handleChangePage = (admin, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (admin) => {
+    setRowsPerPage(parseInt(admin.target.value, 10));
+    setPage(0);
+  };
+
   return (
     <>
       <div className="admin-container" style={{ overflow: "auto" }}>
         <div className="admin-header">
-          <h4>AdminsideTEST</h4>
+          <h4>Admin Side</h4>
+          <h3 className="admin-h3">Utstyrslisten</h3>
           {/*+Legg til btn */}
           <Button
             className="add-btn"
             color="secondary"
-            variant="outlined"
+            variant="contained"
             size="small"
             onClick={handleAddItemClick}
           >
@@ -134,174 +153,180 @@ const AdminPage = ({}) => {
 
         <div className="admin-main">
           {/*Tabell */}
-          <TableContainer
-            component={Paper}
-            style={{ maxHeight: "67vh", overflowY: "auto", zIndex: 1002 }}
-          >
-            <Table size="small">
-              <TableHead className="sticky-header">
-                <TableRow>
-                  <TableCell>
-                    <h3>Utstyr</h3>
-                  </TableCell>
-                  <TableCell>
-                    <h3>Informasjon</h3>
-                  </TableCell>
-                  <TableCell>
-                    <h3>Bilde</h3>
-                  </TableCell>
-                  <TableCell>
-                    <h3>Antall</h3>
-                  </TableCell>
-                  <TableCell>
-                    <h3>Handlinger</h3>
-                  </TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {/*Ny rad for å legge til utstyr */}
-                {isAddingItem && (
+          <div className="equipment-table">
+            <TableContainer
+              component={Paper}
+              style={{ maxHeight: "65vh", overflowY: "100vw", zIndex: 1002 }}
+            >
+              <Table size="small">
+                <TableHead className="sticky-header">
                   <TableRow>
                     <TableCell>
-                      <TextField
-                        value={editingItem?.equipment_name || ""}
-                        onChange={(e) =>
-                          handleEditFieldChange(e, "equipment_name")
-                        }
-                      />
-                    </TableCell>
-                    <TableCell>{/* Informasjonsfelt */}</TableCell>
-                    <TableCell>{/* Bildefelt */}</TableCell>
-                    <TableCell>
-                      <TextField
-                        type="number"
-                        value={editingItem?.equipment_quantity || 0}
-                        onChange={(e) =>
-                          handleEditFieldChange(e, "equipment_quantity")
-                        }
-                      />
+                      <h3>Utstyr</h3>
                     </TableCell>
                     <TableCell>
-                      <div>
-                        <Button onClick={handleSaveNewItem}>
-                          <SaveIcon />
-                        </Button>
-                        <Button onClick={() => setIsAddingItem(false)}>
-                          <ClearIcon />
-                        </Button>
-                      </div>
+                      <h3>Antall</h3>
+                    </TableCell>
+                    <TableCell>
+                      <h3>Handlinger</h3>
                     </TableCell>
                   </TableRow>
-                )}
-                {equipment.map((item) => (
-                  <TableRow key={item.equipment_id}>
-                    {/* ... */}
-                    <TableCell className="table-header-cell">
-                      <Button
-                        className="info-icon"
-                        onClick={() => handleButtonClick(item)}
-                      >
-                        <InfoOutlinedIcon />
-                      </Button>
-                      <Modal
-                        open={openModalMap[item.equipment_id] || false}
-                        onClose={handleClose}
-                        aria-labelledby="equipment-modal-title"
-                        aria-describedby="equipment-modal-description"
-                      >
-                        <Box sx={{ width: 500, height: 500 }}>
-                          {selectedItem && (
-                            <>
-                              <h2 id="equipment-modal-title">
-                                {selectedItem.equipment_name}
-                              </h2>
-                              <img
-                                src={`/assets/images/${selectedItem.equipment_id}.png`}
-                                alt="Bildebeskrivelse"
-                                className="modal-img"
-                              />
-                              <p id="equipment-modal-description">
-                                {selectedItem.equipment_descr}
-                                <Link
-                                  href={`https://www.google.no/search?q=${encodeURIComponent(
-                                    selectedItem.equipment_name
-                                  )}`}
-                                  underline="always"
-                                  target="_blank"
-                                >
-                                  {"Trykk her til å finne mer"}
-                                </Link>
-                              </p>
-                              <Button onClick={handleClose}>Lukk vindu</Button>
-                            </>
-                          )}
-                        </Box>
-                      </Modal>
-                      {editingItem === item ? (
-                        <TextField
-                          value={
-                            editedData.equipment_name || item.equipment_name
-                          }
-                          onChange={(e) =>
-                            handleEditFieldChange(e, "equipment_name")
-                          }
-                        />
-                      ) : (
-                        item.equipment_name
-                      )}
-                    </TableCell>
-                    <TableCell>{/* Legg til informasjonsfelt her */}</TableCell>
-                    <TableCell>{/* Legg til bildefelt her */}</TableCell>
-                    <TableCell className="quantity-cell">
-                      {editingItem === item ? (
-                        <TextField
-                          value={
-                            editedData.equipment_quantity ||
-                            item.equipment_quantity
-                          }
-                          onChange={(e) =>
-                            handleEditFieldChange(e, "equipment_quantity")
-                          }
-                        />
-                      ) : (
-                        item.equipment_quantity
-                      )}
-                    </TableCell>
+                </TableHead>
+                <TableBody>
+                  {/*Ny rad for å legge til utstyr */}
+                  {isAddingItem && (
+                    <TableRow key={editingItem?.equipment_id}>
+                      <TableCell>
+                        {editingItem ? (
+                          <TextField
+                            value={editedData.equipment_name || ""}
+                            onChange={(e) =>
+                              handleEditFieldChange(e, "equipment_name")
+                            }
+                          />
+                        ) : (
+                          ""
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        {editingItem ? (
+                          <TextField
+                            type="number"
+                            value={editedData.equipment_quantity || 0}
+                            onChange={(e) =>
+                              handleEditFieldChange(e, "equipment_quantity")
+                            }
+                          />
+                        ) : (
+                          ""
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        {editingItem ? (
+                          <div className="save-cancel-btn">
+                            <Button onClick={() => handleSaveNewItem()}>
+                              <SaveIcon />
+                            </Button>
+                            <Button onClick={() => setIsAddingItem(false)}>
+                              <ClearIcon />
+                            </Button>
+                          </div>
+                        ) : (
+                          ""
+                        )}
+                        </TableCell>
+                      {equipment.map((item) => (
+                        <TableRow key={item.equipment_id}>
+                        </TableRow>
+                      ))}
+                    </TableRow>
+                  )}
 
-                    <TableCell>
-                      {item.equipment_status}
-                      {editingItem === item ? (
-                        <div>
-                          <Button onClick={() => handleSaveClick(item)}>
-                            <SaveIcon />
-                          </Button>
-                          <Button onClick={() => handleCancelEdit()}>
-                            <ClearIcon />
-                          </Button>
-                        </div>
-                      ) : (
-                        <div className="admin-icons">
-                          <IconButton onClick={() => handleEditClick(item)}>
-                            <EditIcon />
-                          </IconButton>
-                          <IconButton
-                            onClick={() => handleInactivateClick(item)}
-                          >
-                            <VisibilityOffIcon />
-                          </IconButton>
-                          {/* ... andre knapper ... */}
-                        </div>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-          <div>
-            <Link to="/Equipmentlist">
-              <EquipmentlistBtn />
-            </Link>
+                  {/*Infovindu Modal*/}
+
+                  {equipment.map((item) => (
+                    <TableRow key={item.equipment_id}>
+                      <TableCell className="table-header-cell">
+                        <Button
+                          className="info-icon"
+                          onClick={() => handleButtonClick(item)}
+                        >
+                          <InfoOutlinedIcon />
+                        </Button>
+                        <Modal
+                          open={openModalMap[item.equipment_id] || false}
+                          onClose={handleClose}
+                          aria-labelledby="equipment-modal-title"
+                          aria-describedby="equipment-modal-description"
+                        >
+                          <Box sx={{ width: 500, height: 500 }}>
+                            {selectedItem && (
+                              <>
+                                <h2 id="equipment-modal-title">
+                                  {selectedItem.equipment_name}
+                                </h2>
+                                <img
+                                  src={`/assets/images/${selectedItem.equipment_id}.png`}
+                                  alt="Bildebeskrivelse"
+                                  className="modal-img"
+                                />
+                                <p id="equipment-modal-description">
+                                  {selectedItem.equipment_descr}
+                                  <Link
+                                    href={`https://www.google.no/search?q=${encodeURIComponent(
+                                      selectedItem.equipment_name
+                                    )}`}
+                                    underline="always"
+                                    target="_blank"
+                                  >
+                                    {"Trykk her til å finne mer"}
+                                  </Link>
+                                </p>
+                                <Button onClick={handleClose}>
+                                  Lukk vindu
+                                </Button>
+                              </>
+                            )}
+                          </Box>
+                        </Modal>
+
+                        {/*.....*/}
+                        {editingItem === item ? (
+                          <TextField
+                            value={
+                              editedData.equipment_name || item.equipment_name
+                            }
+                            onChange={(e) =>
+                              handleEditFieldChange(e, "equipment_name")
+                            }
+                          />
+                        ) : (
+                          item.equipment_name
+                        )}
+                      </TableCell>
+                      <TableCell className="quantity-cell">
+                        {editingItem === item ? (
+                          <TextField
+                            value={
+                              editedData.equipment_quantity ||
+                              item.equipment_quantity
+                            }
+                            onChange={(e) =>
+                              handleEditFieldChange(e, "equipment_quantity")
+                            }
+                          />
+                        ) : (
+                          item.equipment_quantity
+                        )}
+                      </TableCell>
+
+                      <TableCell className="handle-cell">
+                         {/* Erstatt ikonene med HambMenu */}
+                         <HambMenu eqId={item.equipment_id} item={item} />
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+
+            {/*PAGINERING*/}
+            <div className="pagination-and-btn">
+              <div>
+                <Link to="/Equipmentlist">
+                  <EquipmentlistBtn />
+                </Link>
+              </div>
+              <TablePagination
+                rowsPerPageOptions={[10, 25]}
+                component="div"
+                count={equipment.length} // Totalt antall rader i tabellen
+                rowsPerPage={rowsPerPage} // Antall rader per side
+                page={page} // Gjeldende side
+                onPageChange={handleChangePage} // Hendelsesbehandling for sideendring
+                onRowsPerPageChange={handleChangeRowsPerPage} // Hendelsesbehandling for endring av antall rader per side
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -310,91 +335,3 @@ const AdminPage = ({}) => {
 };
 
 export default AdminPage;
-
-//---------------------------------------------------------------------------------------------------------------------------------------
-
-//RentHomepage
-{/*import * as React from "react";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Modal from "@mui/material/Modal";
-import corporative from "./assets/images/pixel-cells.png";
-import EquipmentList from "./Equipmentlist";
-import Login from "./components/Login";
-
-
-const style = {
-  position: "absolute",
-  top: "47%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 1000,
-  height: 650,
-  bgcolor: "background.paper",
-  border: "1px solid #fff",
-  boxShadow: 35,
-  p: 4,
-};
-
-export default function BasicModal() {
-  const [open, setOpen] = React.useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-
-
-  const [hovered, setHovered] = React.useState(false);
-
-  const [loginModalOpen, setLoginModalOpen] = React.useState(false);
-
-
-
-
-  return (
-    <>
-      <div className="main">
-        <div className="heading">
-          <h1>HeyTekApp</h1>
-        </div>
-        <div className="main-image">
-          {" "}
-          <img
-            src={corporative}
-            alt=""
-            style={{ width: "100%", height: "100%", marginTop: "40px" }}
-          />
-        </div>
-        <Button
-          size="large"
-          className="link-btn"
-          onClick={handleOpen}
-          onMouseEnter={() => setHovered(true)}
-          onMouseLeave={() => setHovered(false)}
-          style={{
-            backgroundColor: hovered ? "#9c27b0" : "#b2dfdb",
-            color: hovered ? "#fff" : "#1e1e1e",
-            transition: "background-color 0.3s, color 0.3s",
-            marginTop: 120,
-            width: "300px",
-            minHeight: "60px",
-            fontSize: "16px",
-          }}
-        >
-      Logg inn
-        </Button>
-        <div>
-          <Modal
-            open={open}
-            onClose={handleClose}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
-          >
-            <Box sx={style}>
-              <EquipmentList />
-            </Box>
-          </Modal>
-        </div>
-      </div>
-    </>
-  );
-}
-*/}

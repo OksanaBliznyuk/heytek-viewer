@@ -32,15 +32,12 @@ export default function BasicModal() {
         <div className="heading">
           <h1>HeyTekApp</h1>
         </div>
-        <div className="homepage-h5">
-          <h5>KUN ANSATTE</h5>
-        </div>
         <div className="main-image">
           {" "}
           <img
             src={corporative}
             alt=""
-            style={{ width: "100%", height: "100%", marginTop: "0" }}
+            style={{ width: "100%", height: "100%", marginTop: "30px" }}
           />
         </div>
         <Button
@@ -50,13 +47,14 @@ export default function BasicModal() {
           onMouseEnter={() => setHovered(true)}
           onMouseLeave={() => setHovered(false)}
           style={{
-            backgroundColor: hovered ? "#9c27b0" : "#b2dfdb",
-            color: hovered ? "#fff" : "#1e1e1e",
+            backgroundColor: hovered ? "#b2dfdb" : "#005260",
+            color: hovered ? "#1e1e1e" : "#fff",
             transition: "background-color 0.3s, color 0.3s",
-            marginTop: 60,
-            width: "200px",
+            marginTop: 95,
+            width: "220px",
             minHeight: "60px",
             fontSize: "16px",
+            borderRadius: "40px",
           }}
         >
           Logg inn

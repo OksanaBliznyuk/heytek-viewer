@@ -1,8 +1,7 @@
 .admin-container {
-  width: 80vw;
+  width: 90vw;
   height: auto;
   background-color: white;
-  margin-left: 5%;
   padding-top: 1%;
 }
 
@@ -56,31 +55,34 @@ h4 {
   width: 120px;
 }
 
-.edit-inactiv-btn {
-  background-color: #eeeeee;
-  width: 100px;
+.edit-btn {
+  width: 160px;
   text-align: center;
-  border-radius: 5px;
+  display: flex;
+  flex-direction: row;
 }
 
 .save-cancel-btn {
   background-color: #eeeeee;
   display: flex;
   flex-direction: row;
-  width: 120px;
+  width: 165px;
   text-align: center;
   border-radius: 5px;
-}
-
-.pagination-and-btn {
-  display: flex;
-  flex-direction: row;
   justify-content: space-between;
-  align-items: center;
-  margin-top: 2vh;
 }
 
-/*.quantity-cell {
-  width: 100px;
+.admin-info-modal {
+  background-color: white;
+  width: 500px;
   text-align: center;
-}*/
+  margin-left: 34%;
+  margin-top: 2%;
+  padding-top: 1%;
+}
+
+.admin-info {
+  width: 90%;
+  margin-left: 5%;
+}
+

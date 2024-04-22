@@ -1,12 +1,11 @@
-
+//AdminHamburgerMeny.js
 //HamburgerMeny.js
 import React, { useState } from "react";
 import { styled, alpha } from "@mui/material/styles";
 import Button from "@mui/material/Button";
-import { IconButton } from "@mui/material";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import MoreIcon from '@mui/icons-material/More';
+import ManageSearchIcon from "@mui/icons-material/ManageSearch";
 import Modal from "@mui/material/Modal";
 import EventsTable from "../EventsTable";
 import LoanOut from "../LoanOut";
@@ -94,12 +93,13 @@ export default function CustomizedMenus({ eqId }) {
       <div
         className="hambmenu-icon"
         style={{
+          backgroundColor: "rgb(238, 238, 238)",
           width: "80px",
           textAlign: "center",
+          borderRadius: "5px",
         }}
       >
-        <IconButton
-        style={{color:"#1565c0"}}
+        <Button
           id="demo-customized-button"
           aria-controls={open ? "demo-customized-menu" : undefined}
           aria-haspopup="true"
@@ -107,8 +107,8 @@ export default function CustomizedMenus({ eqId }) {
           disableElevation
           onClick={handleClick}
         >
-          <MoreIcon />
-        </IconButton>
+          <ManageSearchIcon />
+        </Button>
 
         <StyledMenu
           id="demo-customized-menu"
@@ -119,6 +119,12 @@ export default function CustomizedMenus({ eqId }) {
           open={open}
           onClose={handleClose}
         >
+          <MenuItem onClick={() => handleOpenModal("reserver")} disableRipple>
+            Rediger utstyr
+          </MenuItem>
+          <MenuItem onClick={() => handleOpenModal("reserver")} disableRipple>
+            Slett utstyr
+          </MenuItem>
           <MenuItem onClick={() => handleOpenModal("reserver")} disableRipple>
             Reserver
           </MenuItem>
@@ -156,3 +162,5 @@ export default function CustomizedMenus({ eqId }) {
     </>
   );
 }
+
+

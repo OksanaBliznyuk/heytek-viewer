@@ -1,20 +1,18 @@
 //Calendar.js component
-import * as React from 'react';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import React from 'react';
+import "./Calendar.css";
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 export default function Calendar({ value, onDateTimeChange }) {
   return (
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <DateTimePicker
-        label="Velg dato"
-        value={value}
-        onChange={(date) => {
-          onDateTimeChange && onDateTimeChange(date);
-        }}
-      />
-    </LocalizationProvider>
+    <DatePicker
+      selected={value}
+      onChange={(date) => {
+        onDateTimeChange && onDateTimeChange(date);
+      }}
+      dateFormat="dd/MM/yyyy HH:mm"
+      showTimeInput
+    />
   );
 }
-

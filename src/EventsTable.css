@@ -1,12 +1,14 @@
 .events-container {
   width: 100%;
-  height: auto;
+  height: 565px;
 }
 
 .eventstable-h1 {
-  font-family:Verdana, Geneva, Tahoma, sans-serif;
+  font-family: var(--font-family--text, "Nunito Sans", sans-serif);
   font-weight: 100;
-  font-size: 23px;
+  font-size: 25px;
+  margin-top: -10px;
+  color: #1565c0;
 }
 
 .eventstable-header {
@@ -21,16 +23,16 @@
 
 .events-main {
   width: 100%;
-  height: auto;
-  margin-top: 20px;
+  margin-top: 0px;
   align-items: center;
 }
 
 .events-icons {
   background-color: #eeeeee;
-  width: auto;
+  width: 160px;
   text-align: center;
   border-radius: 5px;
   display: flex;
   flex-direction: row;
+  justify-content: space-between;
 }

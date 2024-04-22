@@ -36,13 +36,13 @@ h2 {
   text-align: center;
 }
 
-.homepage-h5 {
-  font-family: Verdana, Geneva, Tahoma, sans-serif;
+.login-h5 {
+  font-family: var(--font-family--text, "Nunito Sans", sans-serif);
   letter-spacing: 1px;
-  margin-top: -2%;
-  font-size: 20px;
-  font-weight: 100;
-  color: #9c27b0;
+  font-size: 16px;
+  font-weight: 50;
+  text-align: center;
+  color: rgb(183, 23, 61);
 }
 
 .main-image {

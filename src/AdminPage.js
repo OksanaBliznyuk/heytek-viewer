@@ -16,14 +16,14 @@ import {
   Modal,
   TextField,
   IconButton,
-  TablePagination,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
-import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import SaveIcon from "@mui/icons-material/Save";
+import DeleteIcon from "@mui/icons-material/Delete";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import ClearIcon from "@mui/icons-material/Clear";
 import EquipmentlistBtn from "./components/EquipmentlistBtn";
+import HambMenu from "./components/HambMenu";
 
 const AdminPage = ({}) => {
   const [equipment, setEquipment] = useState([]);
@@ -31,9 +31,8 @@ const AdminPage = ({}) => {
   const [openModalMap, setOpenModalMap] = useState({});
   const [editingItem, setEditingItem] = useState(null);
   const [editedData, setEditedData] = useState({});
+  const [deletingItem, setDeletingItem] = useState(null);
   const [isAddingItem, setIsAddingItem] = useState(false);
-  const [page, setPage] = useState(0); // Tilstand for å lagre gjeldende side
-  const [rowsPerPage, setRowsPerPage] = useState(10); // Tilstand for å lagre antall rader per side
 
   const handleOpen = (item) => {
     setSelectedItem(item);
@@ -87,13 +86,13 @@ const AdminPage = ({}) => {
     console.log("Endringer lagret for rad:", item);
   };
 
-  const handleInactivateClick = (item) => {
+  const handleDeleteItemClick = (item) => {
     const isConfirmed = window.confirm(
-      "Er du sikker på at du vil inaktivere dette utstyret?"
+      "Er du sikker på at du vil slette dette utstyret?"
     );
     if (isConfirmed) {
-      // Legg til logikk for å inaktivere raden her!!!
-      console.log("Inaktiver rad:", item);
+      // Legg til logikk for å slette raden her!!!
+      console.log("Slett rad:", item);
     }
   };
 
@@ -123,16 +122,7 @@ const AdminPage = ({}) => {
     setIsAddingItem(false);
   };
 
-  const handleChangePage = (admin, newPage) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (admin) => {
-    setRowsPerPage(parseInt(admin.target.value, 10));
-    setPage(0);
-  };
-
-
+ 
   return (
     <>
       <div className="admin-container" style={{ overflow: "auto" }}>
@@ -153,6 +143,7 @@ const AdminPage = ({}) => {
 
         <div className="admin-main">
           {/*Tabell */}
+
           <div className="equipment-table">
             <TableContainer
               component={Paper}
@@ -174,6 +165,7 @@ const AdminPage = ({}) => {
                 </TableHead>
                 <TableBody>
                   {/*Ny rad for å legge til utstyr */}
+
                   {isAddingItem && (
                     <TableRow key={editingItem?.equipment_id}>
                       <TableCell>
@@ -201,6 +193,9 @@ const AdminPage = ({}) => {
                           ""
                         )}
                       </TableCell>
+
+                      {/*Ikoner i feltet */}
+
                       <TableCell>
                         {editingItem ? (
                           <div className="save-cancel-btn">
@@ -235,17 +230,20 @@ const AdminPage = ({}) => {
                           aria-labelledby="equipment-modal-title"
                           aria-describedby="equipment-modal-description"
                         >
-                          <Box sx={{ width: 500, height: 500 }}>
+                          <Box className="admin-info-modal" >
                             {selectedItem && (
                               <>
                                 <h2 id="equipment-modal-title">
                                   {selectedItem.equipment_name}
                                 </h2>
+                               
                                 <img
                                   src={`/assets/images/${selectedItem.equipment_id}.png`}
                                   alt="Bildebeskrivelse"
                                   className="modal-img"
                                 />
+                             
+                                <div className="admin-info">
                                 <p id="equipment-modal-description">
                                   {selectedItem.equipment_descr}
                                   <Link
@@ -258,6 +256,7 @@ const AdminPage = ({}) => {
                                     {"Trykk her til å finne mer"}
                                   </Link>
                                 </p>
+                                </div>
                                 <Button onClick={handleClose}>
                                   Lukk vindu
                                 </Button>
@@ -296,28 +295,31 @@ const AdminPage = ({}) => {
                         )}
                       </TableCell>
 
+                      {/*Ikoner under HANDLE-cell */}
+
                       <TableCell className="handle-cell">
                         {item.equipment_status}
                         {editingItem === item ? (
                           <div className="save-cancel-btn">
-                            <Button onClick={() => handleSaveClick(item)}>
-                              <SaveIcon />
-                            </Button>
-                            <Button onClick={() => handleCancelEdit()}>
-                              <ClearIcon />
-                            </Button>
-                          </div>
-                        ) : (
-                          <div className="edit-inactiv-btn">
-                            <IconButton onClick={() => handleEditClick(item)}>
-                              <EditIcon />
+                            <IconButton onClick={() => handleSaveClick(item)}>
+                              <SaveIcon style={{ color: "#1565c0" }} />
                             </IconButton>
                             <IconButton
-                              onClick={() => handleInactivateClick(item)}
+                              onClick={() => handleDeleteItemClick(item)}
                             >
-                              <VisibilityOffIcon />
+                              <DeleteIcon style={{ color: "#ab003c" }} />
                             </IconButton>
-                            {/* ... andre knapper ... */}
+                            <IconButton onClick={() => handleCancelEdit()}>
+                              <ClearIcon style={{ color: "#1565c0" }} />
+                            </IconButton>
+                          </div>
+                        ) : (
+                          <div className="edit-btn">
+                            <IconButton onClick={() => handleEditClick(item)}>
+                              <EditIcon style={{ color: "#9c27b0" }} />
+                            </IconButton>
+                            {/* Erstatt ikonene med HambMenu */}
+                            <HambMenu eqId={item.equipment_id} item={item} />
                           </div>
                         )}
                       </TableCell>
@@ -326,24 +328,11 @@ const AdminPage = ({}) => {
                 </TableBody>
               </Table>
             </TableContainer>
-
-            {/*PAGINERING*/}
-            <div className="pagination-and-btn">
-            <div>
-            <Link to="/Equipmentlist">
-              <EquipmentlistBtn />
-            </Link>
+              <div>
+                <Link to="/Equipmentlist">
+                  <EquipmentlistBtn />
+                </Link>
             </div>
-        <TablePagination
-          rowsPerPageOptions={[10, 25]} 
-          component="div"
-          count={equipment.length} // Totalt antall rader i tabellen
-          rowsPerPage={rowsPerPage} // Antall rader per side
-          page={page} // Gjeldende side
-          onPageChange={handleChangePage} // Hendelsesbehandling for sideendring
-          onRowsPerPageChange={handleChangeRowsPerPage} // Hendelsesbehandling for endring av antall rader per side
-        />
-          </div>
           </div>
         </div>
       </div>

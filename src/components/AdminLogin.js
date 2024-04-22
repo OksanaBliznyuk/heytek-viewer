@@ -8,12 +8,10 @@ const AdminLogin = ({ onLogin, onCancel }) => {
   const [error, setError] = useState("");
   const [modalOpen, setModalOpen] = useState(true);
 
-
   useEffect(() => {
     // Setter modalOpen til true når komponenten monteres
     setModalOpen(true);
   }, []);
-
 
   const handleLogin = () => {
     // Implementer autentiseringslogikken her
@@ -63,7 +61,9 @@ const AdminLogin = ({ onLogin, onCancel }) => {
             color: "#9c27b0",
           }}
         />
-
+        <div className="login-h5">
+          <h5>KUN ADMINISTRATOR</h5>
+        </div>
         <TextField
           label="Kode"
           variant="outlined"

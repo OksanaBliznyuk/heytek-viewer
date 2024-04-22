@@ -8,12 +8,10 @@ const Login = ({ onLogin, onCancel }) => {
   const [error, setError] = useState("");
   const [modalOpen, setModalOpen] = useState(true);
 
-
   useEffect(() => {
     // Setter modalOpen til true når komponenten monteres
     setModalOpen(true);
   }, []);
-
 
   const handleLogin = () => {
     // Implementer autentiseringslogikken her
@@ -36,14 +34,13 @@ const Login = ({ onLogin, onCancel }) => {
     // La modalen bli åpen hvis du klikker på feltet for å unngå lukking ved klikk på tekstfeltet
     e.stopPropagation();
   };
-  
 
   return (
     <Modal
       open={modalOpen}
       aria-labelledby="numeric-login-modal"
       aria-describedby="numeric-login-form"
-      onClick={handleModalClick} 
+      onClick={handleModalClick}
       style={{
         display: "flex",
         alignItems: "center",
@@ -60,7 +57,9 @@ const Login = ({ onLogin, onCancel }) => {
             color: "#9c27b0",
           }}
         />
-
+        <div className="login-h5">
+          <h5>KUN ANSATTE</h5>
+        </div>
         <TextField
           label="Kode"
           variant="outlined"
