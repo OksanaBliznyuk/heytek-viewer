@@ -160,6 +160,7 @@ const EventsTable = ({ eqId }) => {
         setUpdateKey((prevKey) => prevKey + 1); // Oppdater oppdateringsnøkkelen for å utløse re-henting av data
       } catch (error) {
         console.error("Error deleting event:", error.message);
+        console.error(eventId);
       }
     }
   };
@@ -343,7 +344,7 @@ const EventsTable = ({ eqId }) => {
                             }
                           />
                         ) : (
-                          event.event_date
+                          event.event_startdate
                         )}
                       </TableCell>
                       <TableCell>
@@ -355,7 +356,7 @@ const EventsTable = ({ eqId }) => {
                             }
                           />
                         ) : (
-                          event.event_date
+                          event.event_enddate
                         )}
                       </TableCell>
                       <TableCell>
