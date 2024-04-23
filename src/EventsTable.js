@@ -24,14 +24,14 @@ import Calendar from "./components/Calendar";
 const EventsTable = ({ eqId }) => {
   const getInitialEditedFields = () => {
     if (editingRowId === null) {
-      return {}; // Tomt objekt hvis ikke i redigeringsmodus
+      return {};
     }
 
     const editedRow = events.find((event) => event.event_id === editingRowId);
-    console.log("Edited Row from Backend:", editedRow); // Legg til denne loggen
+    console.log("Edited Row from Backend:", editedRow);
 
     if (!editedRow) {
-      return {}; // Tomt objekt hvis raden ikke finnes
+      return {};
     }
 
     // Returner de redigerte feltene med verdiene fra den valgte raden
@@ -50,7 +50,7 @@ const EventsTable = ({ eqId }) => {
   const [editingRowId, setEditingRowId] = useState(null);
   const [editedFields, setEditedFields] = useState(getInitialEditedFields());
   const [isAddingNewItem, setIsAddingNewItem] = useState(false);
-  const [updateKey, setUpdateKey] = useState(0); // Oppdateringsnøkkel
+  const [updateKey, setUpdateKey] = useState(0);
 
   const handleAddNewItem = () => {
     setIsAddingNewItem(true);
@@ -99,7 +99,7 @@ const EventsTable = ({ eqId }) => {
   //---------------------------------------------------------------------------------
   // Ny funksjon for å sende POST-forespørsel og lagre en ny hendelse
   const saveNewEvent = async () => {
-    console.log("Saving event with data:", editedFields); // Legg til denne for å debugge
+    console.log("Saving event with data:", editedFields);
     try {
       const response = await axios.post("http://localhost:8099/events", {
         eventuser_name: editedFields.eventuser_name,
@@ -108,30 +108,69 @@ const EventsTable = ({ eqId }) => {
         event_enddate: editedFields.event_enddate,
         event_comment: editedFields.event_comment,
         eq_id: eqId,
-        event_type: "reservation", // Hardkodet til reservasjon, kan endres etter behov
+        event_type: "reservation",
       });
       console.log("New event saved:", response.data);
-      setUpdateKey((prevKey) => prevKey + 1); // Oppdater oppdateringsnøkkelen for å utløse re-henting av data
-      // Legg til logikk for å oppdatere UI eller hente ny data fra serveren hvis nødvendig
+
+      // Opprett en kopi av den nåværende hendelselisten
+      const updatedEvents = [...events];
+
+      // Legg den nye hendelsen til starten av hendelselisten
+      updatedEvents.unshift(response.data);
+
+      // Logg den oppdaterte hendelselisten for å sjekke om den nye hendelsen er lagt til riktig
+      console.log("Updated events:", updatedEvents);
+
+      // Oppdater hendelselisten
+      setEvents(updatedEvents);
+
+      // Oppdater oppdateringsnøkkelen for å utløse re-henting av data
+      setUpdateKey((prevKey) => prevKey + 1);
     } catch (error) {
       console.error("Error saving new event:", error.message);
     }
   };
 
   // Legg til en ny hendelsesbehandler for å håndtere lagring av ny hendelse
-  const handleSaveNewEvent = () => {
-    saveNewEvent();
+  const handleSaveNewEvent = async () => {
+    await saveNewEvent();
     setIsAddingNewItem(false); // Lukk redigeringsmodus etter at hendelsen er lagret
   };
-  //----------------------------------------------------------------------------------
 
-  const handleEditClick = (rowId) => {
-    setEditingRowId(rowId);
+  //----------------------------------------------------------------------------------
+  
+  const handleEditClick = (eventId) => {
+    // Hendelsen som samsvarer med eventId
+    const selectedEvent = events.find((event) => event.event_id === eventId);
+
+    // Oppdater tilstandene til editedFields med dataene fra den valgte hendelsen
+    setEditedFields({
+      eventuser_name: selectedEvent.eventuser_name,
+      event_quantity: selectedEvent.event_quantity,
+      event_startdate: selectedEvent.event_startdate,
+      event_enddate: selectedEvent.event_enddate,
+      event_comment: selectedEvent.event_comment,
+      event_type: selectedEvent.event_type,
+    });
+
+    setEditingRowId(eventId);
   };
 
-  const handleSaveClick = (rowId) => {
-    // Implementer logikken for å lagre endringer i databasen
-    setEditingRowId(null);
+  // Må det være GET event her???
+  const handleSaveClick = async (eventId) => {
+    try {
+      // Send en forespørsel til backend for å oppdatere den valgte hendelsen med de redigerte verdiene
+      await axios.put(`http://localhost:8099/events/${eventId}`, editedFields);
+
+      // Oppdater hendelsene i hendelseslisten med de redigerte verdiene
+      setEvents((prevEvents) =>
+        prevEvents.map((event) =>
+          event.event_id === eventId ? editedFields : event
+        )
+      );
+    } catch (error) {
+      console.error("Error saving changes:", error.message);
+    }
   };
 
   // Edit i den nye raden
@@ -178,7 +217,18 @@ const EventsTable = ({ eqId }) => {
             color="secondary"
             size="small"
             style={{ width: 200, height: 40, marginTop: -23 }}
-            onClick={() => setIsAddingNewItem(true)}
+            onClick={() => {
+              setIsAddingNewItem(true);
+              // Oppdater editedFields-objektet til å inneholde tomme verdier
+              setEditedFields({
+                eventuser_name: "",
+                event_quantity: "",
+                event_startdate: null, // Sett til null hvis det er et dato- eller tidobjekt
+                event_enddate: null,
+                event_comment: "",
+                event_type: "",
+              });
+            }}
           >
             <AddIcon /> Legg til reservasjon
           </Button>
@@ -240,22 +290,7 @@ const EventsTable = ({ eqId }) => {
                           }
                         />
                       </TableCell>
-                      {/*<TableCell>
-                        <TextField
-                          value={editedFields.event_date}
-                          onChange={(e) =>
-                            handleFieldChange("event_date", e.target.value)
-                          }
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <TextField
-                          value={editedFields.event_date}
-                          onChange={(e) =>
-                            handleFieldChange("event_date", e.target.value)
-                          }
-                        />
-                        </TableCell>*/}
+
                       <TableCell>
                         {/* Calendar-komponenten  */}
                         <Calendar
@@ -302,6 +337,8 @@ const EventsTable = ({ eqId }) => {
                       </TableCell>
                     </TableRow>
                   )}
+
+                  {/*Redigering felter */}
                   {events.map((event) => (
                     <TableRow key={event.event_id}>
                       <TableCell>
@@ -340,7 +377,10 @@ const EventsTable = ({ eqId }) => {
                           <TextField
                             value={editedFields.event_startdate}
                             onChange={(e) =>
-                              handleFieldChange("event_startdate", e.target.value)
+                              handleFieldChange(
+                                "event_startdate",
+                                e.target.value
+                              )
                             }
                           />
                         ) : (
@@ -387,10 +427,15 @@ const EventsTable = ({ eqId }) => {
                       <TableCell>
                         {editingRowId === event.event_id ? (
                           <div className="events-icons">
-                            <IconButton onClick={handleSaveClick}>
+                            <IconButton
+                              onClick={() => handleSaveClick(event.event_id)}
+                            >
                               <SaveIcon style={{ color: "#1565c0" }} />
                             </IconButton>
-                            <IconButton onClick={() => handleDeleteClick(event.event_id)}>
+
+                            <IconButton
+                              onClick={() => handleDeleteClick(event.event_id)}
+                            >
                               <DeleteIcon style={{ color: "#ab003c" }} />
                             </IconButton>
                             <IconButton onClick={() => handleCancelEdit(event)}>
@@ -418,7 +463,6 @@ const EventsTable = ({ eqId }) => {
           ) : (
             <p>Ingen hendelser å vise.</p>
           )}
-
         </div>
       </div>
     </>
