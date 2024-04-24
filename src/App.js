@@ -5,7 +5,7 @@ import RentHomepage from "./RentHomepage";
 import EquipmentList from "./Equipmentlist.js";
 import AdminPage from "./AdminPage";
 import EventsTable from './EventsTable'; 
-import DeliverEquipment from './DeliverEquipment';
+import ReturnLoan from './ReturnLoan';
 import LoanOut from './LoanOut';
 
 
@@ -18,7 +18,7 @@ function App() {
           <Route path="/EquipmentList" element={<EquipmentList />} />
           <Route path="/events-table" element={<EventsTable />}exact />
           <Route path="/LoanOut" element={<LoanOut />}exact />  
-          <Route path="/DeliverEquipment" element={<DeliverEquipment />}exact />
+          <Route path="/ReturnLoan" element={<ReturnLoan />}exact />
           <Route path="/admin" element={<AdminPage />} exact />
         </Routes>
       </Router>

@@ -3,22 +3,22 @@ body {
     height: auto;
   }
   
-  .deliverequipment-container {
+  .returnloan-container {
     background-color: rgb(199, 218, 211);
   }
   
-  .deliverequipment-header {
+  .returnloan-header {
     width: 100%;
     height: 60px;
   }
 
-  .deliver-h1 {
+  .returnloan-h1 {
     font-family:Verdana, Geneva, Tahoma, sans-serif;
     font-weight: 100;
     font-size: 25px;
   }
   
-  .deliverequipment-main {
+  .returnloan-main {
     width: 100%;
     height: 350px;
   }

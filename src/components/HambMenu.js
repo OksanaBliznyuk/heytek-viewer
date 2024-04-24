@@ -10,7 +10,7 @@ import MoreIcon from '@mui/icons-material/More';
 import Modal from "@mui/material/Modal";
 import EventsTable from "../EventsTable";
 import LoanOut from "../LoanOut";
-import DeliverEquipment from "../DeliverEquipment";
+import ReturnLoan from "../ReturnLoan";
 
 const StyledMenu = styled((props) => (
   <Menu
@@ -149,7 +149,7 @@ export default function CustomizedMenus({ eqId }) {
         >
           {modalContent === "reserver" && <EventsTable eqId={eqId} />}
           {modalContent === "lånUt" && <LoanOut />}
-          {modalContent === "leverInn" && <DeliverEquipment />}
+          {modalContent === "leverInn" && <ReturnLoan />}
           <Button onClick={handleCloseModal}>Lukk vindu</Button>
         </div>
       </StyledModal>

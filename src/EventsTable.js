@@ -34,7 +34,7 @@ const EventsTable = ({ eqId }) => {
       return {};
     }
 
-    // Returner de redigerte feltene med verdiene fra den valgte raden
+    // Returnerer de redigerte feltene med verdiene fra den valgte raden
     return {
       eventuser_name: editedRow.eventuser_name,
       event_quantity: editedRow.event_quantity,
@@ -42,7 +42,6 @@ const EventsTable = ({ eqId }) => {
       event_enddate: editedRow.event_enddate,
       event_comment: editedRow.event_comment,
       event_type: editedRow.event_type,
-      // Legg til resten av feltene her ...
     };
   };
 
@@ -55,11 +54,11 @@ const EventsTable = ({ eqId }) => {
   const handleAddNewItem = () => {
     setIsAddingNewItem(true);
 
-    // Legg til en ny tom rad i events-statet
+    //En ny tom rad i events-statet
     setEvents((prevEvents) => [
       ...prevEvents,
       {
-        event_id: Date.now(), // Bruk en unik identifikator for hver ny rad
+        event_id: Date.now(), //En unik identifikator for hver ny rad
         eventuser_name: "",
         event_quantity: "",
         event_startdate: "",
@@ -69,7 +68,7 @@ const EventsTable = ({ eqId }) => {
       },
     ]);
 
-    // Sett redigeringsmodus for den nye raden
+    //Redigeringsmodus for den nye raden
     setEditingRowId(Date.now());
     setEditedFields({
       eventuser_name: "",
@@ -108,11 +107,11 @@ const EventsTable = ({ eqId }) => {
         event_enddate: editedFields.event_enddate,
         event_comment: editedFields.event_comment,
         eq_id: eqId,
-        event_type: "reservation",
+        event_type: "reserverinf",
       });
       console.log("New event saved:", response.data);
 
-      // Opprett en kopi av den nåværende hendelselisten
+      //En kopi av den nåværende hendelselisten
       const updatedEvents = [...events];
 
       // Legg den nye hendelsen til starten av hendelselisten
@@ -121,17 +120,17 @@ const EventsTable = ({ eqId }) => {
       // Logg den oppdaterte hendelselisten for å sjekke om den nye hendelsen er lagt til riktig
       console.log("Updated events:", updatedEvents);
 
-      // Oppdater hendelselisten
+      //Oppdater hendelselisten
       setEvents(updatedEvents);
 
-      // Oppdater oppdateringsnøkkelen for å utløse re-henting av data
+      //Oppdateringsnøkkelen for å utløse re-henting av data
       setUpdateKey((prevKey) => prevKey + 1);
     } catch (error) {
       console.error("Error saving new event:", error.message);
     }
   };
 
-  // Legg til en ny hendelsesbehandler for å håndtere lagring av ny hendelse
+  //Ny hendelsesbehandler for å håndtere lagring av ny hendelse
   const handleSaveNewEvent = async () => {
     await saveNewEvent();
     setIsAddingNewItem(false); // Lukk redigeringsmodus etter at hendelsen er lagret
@@ -143,7 +142,7 @@ const EventsTable = ({ eqId }) => {
     // Hendelsen som samsvarer med eventId
     const selectedEvent = events.find((event) => event.event_id === eventId);
 
-    // Oppdater tilstandene til editedFields med dataene fra den valgte hendelsen
+    //Tilstandene til editedFields med dataene fra den valgte hendelsen
     setEditedFields({
       eventuser_name: selectedEvent.eventuser_name,
       event_quantity: selectedEvent.event_quantity,
@@ -156,23 +155,20 @@ const EventsTable = ({ eqId }) => {
     setEditingRowId(eventId);
   };
 
-  // Må det være GET event her???
+  //----PUT event---------------------------------------------------------------------------
   const handleSaveClick = async (eventId) => {
     try {
-      // Send en forespørsel til backend for å oppdatere den valgte hendelsen med de redigerte verdiene
+      // Send en PUT-forespørsel til backend for å oppdatere hendelsen med den gitte eventId
       await axios.put(`http://localhost:8099/events/${eventId}`, editedFields);
-
-      // Oppdater hendelsene i hendelseslisten med de redigerte verdiene
-      setEvents((prevEvents) =>
-        prevEvents.map((event) =>
-          event.event_id === eventId ? editedFields : event
-        )
-      );
+  
+      // Hent hendelsene på nytt fra serveren for å oppdatere grensesnittet
+      const response = await axios.get("http://localhost:8099/events?equipment_id=" + eqId);
+      setEvents(response.data.events);
     } catch (error) {
       console.error("Error saving changes:", error.message);
     }
   };
-
+  
   // Edit i den nye raden
   const handleCancelEdit = () => {
     if (isAddingNewItem) {
@@ -184,7 +180,7 @@ const EventsTable = ({ eqId }) => {
   };
 
   const handleFieldChange = (field, value) => {
-    // Oppdater de redigerte feltene når brukeren endrer verdien i tekstfeltet
+    //Fedigerte feltene når brukeren endrer verdien i tekstfeltet
     setEditedFields((prevFields) => ({ ...prevFields, [field]: value }));
   };
 
@@ -196,7 +192,7 @@ const EventsTable = ({ eqId }) => {
       try {
         await axios.delete(`http://localhost:8099/events/${eventId}`);
         console.log("Event deleted:", eventId);
-        setUpdateKey((prevKey) => prevKey + 1); // Oppdater oppdateringsnøkkelen for å utløse re-henting av data
+        setUpdateKey((prevKey) => prevKey + 1); //Oppdateringsnøkkelen for å utløse re-henting av data
       } catch (error) {
         console.error("Error deleting event:", error.message);
         console.error(eventId);
@@ -219,14 +215,14 @@ const EventsTable = ({ eqId }) => {
             style={{ width: 200, height: 40, marginTop: -23 }}
             onClick={() => {
               setIsAddingNewItem(true);
-              // Oppdater editedFields-objektet til å inneholde tomme verdier
+              // Oppdaterer editedFields-objektet til å inneholde tomme verdier
               setEditedFields({
                 eventuser_name: "",
                 event_quantity: "",
-                event_startdate: null, // Sett til null hvis det er et dato- eller tidobjekt
+                event_startdate: null, //Null hvis det er et dato- eller tidobjekt
                 event_enddate: null,
                 event_comment: "",
-                event_type: "",
+                event_type: "reservering",
               });
             }}
           >
@@ -234,7 +230,7 @@ const EventsTable = ({ eqId }) => {
           </Button>
         </div>
         <div className="events-main">
-          {events.length >= 0 ? ( // Legg til denne betingelsen for å sjekke om det er data å vise
+          {events.length >= 0 ? ( //Betingelsen for å sjekke om det er data å vise
             <TableContainer
               component={Paper}
               style={{
@@ -301,7 +297,6 @@ const EventsTable = ({ eqId }) => {
                         />
                       </TableCell>
                       <TableCell>
-                        {/* Bruk Calendar-komponenten for å velge sluttdato */}
                         <Calendar
                           value={editedFields.event_enddate}
                           onDateTimeChange={(date) =>
@@ -338,7 +333,7 @@ const EventsTable = ({ eqId }) => {
                     </TableRow>
                   )}
 
-                  {/*Redigering felter */}
+                  {/*Redigering av felter */}
                   {events.map((event) => (
                     <TableRow key={event.event_id}>
                       <TableCell>
@@ -371,7 +366,6 @@ const EventsTable = ({ eqId }) => {
                           event.event_quantity
                         )}
                       </TableCell>
-                      {/* Fortsett slik for resten av feltene */}
                       <TableCell>
                         {editingRowId === event.event_id ? (
                           <TextField
