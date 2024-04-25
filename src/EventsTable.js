@@ -99,6 +99,8 @@ const EventsTable = ({ eqId }) => {
   // Ny funksjon for å sende POST-forespørsel og lagre en ny hendelse
   const saveNewEvent = async () => {
     console.log("Saving event with data:", editedFields);
+    console.log("eqId:", eqId);
+
     try {
       const response = await axios.post("http://localhost:8099/events", {
         eventuser_name: editedFields.eventuser_name,
@@ -107,7 +109,7 @@ const EventsTable = ({ eqId }) => {
         event_enddate: editedFields.event_enddate,
         event_comment: editedFields.event_comment,
         eq_id: eqId,
-        event_type: "reserverinf",
+        event_type: "reservation",
       });
       console.log("New event saved:", response.data);
 
@@ -155,18 +157,20 @@ const EventsTable = ({ eqId }) => {
     setEditingRowId(eventId);
   };
 
-  //----PUT event---------------------------------------------------------------------------
+  //----PATCH event---------------------------------------------------------------------------
   const handleSaveClick = async (eventId) => {
     try {
-      // Send en PUT-forespørsel til backend for å oppdatere hendelsen med den gitte eventId
-      await axios.put(`http://localhost:8099/events/${eventId}`, editedFields);
-  
-      // Hent hendelsene på nytt fra serveren for å oppdatere grensesnittet
-      const response = await axios.get("http://localhost:8099/events?equipment_id=" + eqId);
-      setEvents(response.data.events);
+      // Send en PATCH-forespørsel til backend for å oppdatere hendelsen med den gitte eventId
+      await axios.patch(`http://localhost:8099/events/${eventId}`, editedFields);
+  console.log("Har lagret, tror jeg");
     } catch (error) {
       console.error("Error saving changes:", error.message);
     }
+    handleCancelEdit();    
+    // Hent hendelsene på nytt fra serveren for å oppdatere grensesnittet
+         const response = await axios.get("http://localhost:8099/events?equipment_id=" + eqId);
+         setEvents(response.data.events);
+   
   };
   
   // Edit i den nye raden
