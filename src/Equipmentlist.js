@@ -40,11 +40,12 @@ const style = {
   zIndex: 1001,
 };
 
-const EquipmentList = (eqId) => {
+const EquipmentList = ({ eqId }) => {
   const [equipment, setEquipment] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [openModalMap, setOpenModalMap] = useState({});
   const [eventsModalOpen, setEventsModalOpen] = useState(false);
+  const [currentEqId, setCurrentEqId] = useState(null);
 
   const overlayStyle = {
     position: "fixed",
@@ -103,7 +104,8 @@ const EquipmentList = (eqId) => {
   };
 
   // Hendelsesbehandler for å åpne modalen når EventIcon-knappen klikkes
-  const handleOpenEventsModal = () => {
+  const handleOpenEventsModal = (eqId) => {
+    setCurrentEqId(eqId);
     setEventsModalOpen(true);
   };
 
@@ -206,16 +208,9 @@ const EquipmentList = (eqId) => {
                   <TableCell style={{textAlign: "center"}}>{item.equipment_available}</TableCell>
                   <TableCell style={{textAlign: "center"}}>
                     {/* Legg til EventIcon-knappen */}
-                    <IconButton onClick={handleOpenEventsModal}>
-                      <EventIcon
-                        style={{
-                          // Legg til den opprinnelige stilen for ikonet
-                          color: "#1769aa",
-                          width: 30,
-                          height: 30,
-                        }}
-                      />
-                    </IconButton>
+                    <IconButton onClick={() => handleOpenEventsModal(item.equipment_id)}>
+  <EventIcon style={{ color: "#1769aa", width: 30, height: 30 }} />
+</IconButton>
 
                     {/* Modal for EventsTable */}
                     <Modal
@@ -245,7 +240,7 @@ const EquipmentList = (eqId) => {
                           p: 4,
                         }}
                       >
-                        <EventsTable eqId={eqId} />
+                        <EventsTable eqId={currentEqId} />
                         <Button
                           onClick={handleCloseEventsModal}
                         >

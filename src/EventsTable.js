@@ -22,6 +22,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import Calendar from "./components/Calendar";
 
 const EventsTable = ({ eqId }) => {
+  console.log("eqId: " + eqId)
   const getInitialEditedFields = () => {
     if (editingRowId === null) {
       return {};
@@ -108,7 +109,7 @@ const EventsTable = ({ eqId }) => {
         event_startdate: editedFields.event_startdate,
         event_enddate: editedFields.event_enddate,
         event_comment: editedFields.event_comment,
-        eq_id: eqId,
+        eq_id: eqId ,
         event_type: "reservation",
       });
       console.log("New event saved:", response.data);
