@@ -23,3 +23,13 @@ body {
     height: 350px;
   }
   
+  
+.return-loan-icons {
+  background-color: #eeeeee;
+  width: 160px;
+  text-align: center;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}

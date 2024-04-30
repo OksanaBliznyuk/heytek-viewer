@@ -18,6 +18,7 @@ import {
   IconButton,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
+import CreateOutlinedIcon from '@mui/icons-material/CreateOutlined';
 import SaveIcon from "@mui/icons-material/Save";
 import DeleteIcon from "@mui/icons-material/Delete";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
@@ -316,7 +317,7 @@ const AdminPage = ({}) => {
                         ) : (
                           <div className="edit-btn">
                             <IconButton onClick={() => handleEditClick(item)}>
-                              <EditIcon style={{ color: "#9c27b0" }} />
+                              <CreateOutlinedIcon style={{ /*color: "#9c27b0"*/ }} />
                             </IconButton>
                             {/* Erstatt ikonene med HambMenu */}
                             <HambMenu eqId={item.equipment_id} item={item} />

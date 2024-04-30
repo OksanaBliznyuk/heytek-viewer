@@ -114,19 +114,10 @@ const EventsTable = ({ eqId }) => {
       });
       console.log("New event saved:", response.data);
 
-      //En kopi av den nåværende hendelselisten
-      const updatedEvents = [...events];
+      // Oppdater hendelselisten med den nye hendelsen lagt til øverst
+    setEvents((prevEvents) => [response.data, ...prevEvents]);
 
-      // Legg den nye hendelsen til starten av hendelselisten
-      updatedEvents.unshift(response.data);
-
-      // Logg den oppdaterte hendelselisten for å sjekke om den nye hendelsen er lagt til riktig
-      console.log("Updated events:", updatedEvents);
-
-      //Oppdater hendelselisten
-      setEvents(updatedEvents);
-
-      //Oppdateringsnøkkelen for å utløse re-henting av data
+   //Oppdateringsnøkkelen for å utløse re-henting av data
       setUpdateKey((prevKey) => prevKey + 1);
     } catch (error) {
       console.error("Error saving new event:", error.message);
@@ -185,7 +176,7 @@ const EventsTable = ({ eqId }) => {
   };
 
   const handleFieldChange = (field, value) => {
-    //Fedigerte feltene når brukeren endrer verdien i tekstfeltet
+    //Redigerte feltene når brukeren endrer verdien i tekstfeltet
     setEditedFields((prevFields) => ({ ...prevFields, [field]: value }));
   };
 
@@ -267,7 +258,7 @@ const EventsTable = ({ eqId }) => {
                       <h3>Event type</h3>
                     </TableCell>
                     <TableCell>
-                      <h3>Handling</h3>
+                      <h3>{/*Handling*/}</h3>
                     </TableCell>
                   </TableRow>
                 </TableHead>
