@@ -3,12 +3,27 @@
   height: 565px;
 }
 
+.eventstable-tittel {
+  display: flex;
+  flex-direction: column;
+ text-align: left;
+}
+
+
 .eventstable-h1 {
   font-family: var(--font-family--text, "Nunito Sans", sans-serif);
   font-weight: 100;
   font-size: 25px;
   margin-top: -10px;
   color: #1565c0;
+}
+
+.eventstable-h2 {
+  color: grey;
+  font-size: 16px;
+ margin-top: -8px;
+ text-align: left;
+
 }
 
 .eventstable-header {

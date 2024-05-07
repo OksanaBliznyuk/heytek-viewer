@@ -1,4 +1,4 @@
-// EventsTable.js 30.04
+// EventsTable.js 07.05
 import React, { useState, useEffect } from "react";
 import "./EventsTable.css";
 import axios from "axios";
@@ -21,7 +21,7 @@ import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Calendar from "./components/Calendar";
 
-const EventsTable = ({ eqId }) => {
+const EventsTable = ({ eqId, selectedEquipmentName }) => {
   console.log("eqId: " + eqId)
   const getInitialEditedFields = () => {
     if (editingRowId === null) {
@@ -114,19 +114,10 @@ const EventsTable = ({ eqId }) => {
       });
       console.log("New event saved:", response.data);
 
-      //En kopi av den nåværende hendelselisten
-      const updatedEvents = [...events];
+      // Oppdater hendelselisten med den nye hendelsen lagt til øverst
+    setEvents((prevEvents) => [response.data, ...prevEvents]);
 
-      // Legg den nye hendelsen til starten av hendelselisten
-      updatedEvents.unshift(response.data);
-
-      // Logg den oppdaterte hendelselisten for å sjekke om den nye hendelsen er lagt til riktig
-      console.log("Updated events:", updatedEvents);
-
-      //Oppdater hendelselisten
-      setEvents(updatedEvents);
-
-      //Oppdateringsnøkkelen for å utløse re-henting av data
+   //Oppdateringsnøkkelen for å utløse re-henting av data
       setUpdateKey((prevKey) => prevKey + 1);
     } catch (error) {
       console.error("Error saving new event:", error.message);
@@ -209,9 +200,9 @@ const EventsTable = ({ eqId }) => {
     <>
       <div className="events-container">
         <div className="eventstable-header">
-          <h1 className="eventstable-h1">
-            Sjekk reservasjon og reserver utstyr her
-          </h1>
+          <div className="eventstable-tittel">
+          <h1 className="eventstable-h1">{selectedEquipmentName}</h1>  <h2 className="eventstable-h2"> (sjekk reservasjon og reserver utstyr her) </h2>
+          </div>
           <Button
             className="add-btn"
             variant="contained"

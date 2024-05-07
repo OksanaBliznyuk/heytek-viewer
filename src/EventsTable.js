@@ -21,7 +21,7 @@ import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Calendar from "./components/Calendar";
 
-const EventsTable = ({ eqId }) => {
+const EventsTable = ({ eqId, selectedEquipmentName }) => {
   console.log("eqId: " + eqId)
   const getInitialEditedFields = () => {
     if (editingRowId === null) {
@@ -200,9 +200,9 @@ const EventsTable = ({ eqId }) => {
     <>
       <div className="events-container">
         <div className="eventstable-header">
-          <h1 className="eventstable-h1">
-            Sjekk reservasjon og reserver utstyr her
-          </h1>
+          <div className="eventstable-tittel">
+          <h1 className="eventstable-h1">{selectedEquipmentName}</h1>  <h2 className="eventstable-h2"> (sjekk reservasjon og reserver utstyr her) </h2>
+          </div>
           <Button
             className="add-btn"
             variant="contained"

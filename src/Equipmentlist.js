@@ -46,6 +46,7 @@ const EquipmentList = ({ eqId }) => {
   const [openModalMap, setOpenModalMap] = useState({});
   const [eventsModalOpen, setEventsModalOpen] = useState(false);
   const [currentEqId, setCurrentEqId] = useState(null);
+  const [selectedEquipmentName, setSelectedEquipmentName] = useState("");
 
   const overlayStyle = {
     position: "fixed",
@@ -104,8 +105,9 @@ const EquipmentList = ({ eqId }) => {
   };
 
   // Hendelsesbehandler for å åpne modalen når EventIcon-knappen klikkes
-  const handleOpenEventsModal = (eqId) => {
+  const handleOpenEventsModal = (eqId, equipmentName) => {
     setCurrentEqId(eqId);
+    setSelectedEquipmentName(equipmentName); // Set the selected equipment name here
     setEventsModalOpen(true);
   };
 
@@ -129,22 +131,22 @@ const EquipmentList = ({ eqId }) => {
             marginLeft: "5%",
             overflowY: "auto",
             zIndex: 1002,
-            marginTop: "-10px"
+            marginTop: "-10px",
           }}
         >
           <Table size="medium">
             <TableHead className="sticky-header">
               <TableRow>
-                <TableCell style={{paddingLeft: 120}}>
+                <TableCell style={{ paddingLeft: 120 }}>
                   <h3>Utstyr</h3>
                 </TableCell>
-                <TableCell style={{textAlign: "center"}}>
+                <TableCell style={{ textAlign: "center" }}>
                   <h3>Antall</h3>
                 </TableCell>
-                <TableCell style={{textAlign: "center"}}>
+                <TableCell style={{ textAlign: "center" }}>
                   <h3>Tilgjengelig</h3>
                 </TableCell>
-                <TableCell style={{textAlign: "center"}}>
+                <TableCell style={{ textAlign: "center" }}>
                   <h3>Reservere</h3>
                 </TableCell>
               </TableRow>
@@ -204,13 +206,21 @@ const EquipmentList = ({ eqId }) => {
 
                     {item.equipment_name}
                   </TableCell>
-                  <TableCell style={{textAlign: "center"}}>{item.equipment_quantity}</TableCell>
-                  <TableCell style={{textAlign: "center"}}>{item.equipment_available}</TableCell>
-                  <TableCell style={{textAlign: "center"}}>
+                  <TableCell style={{ textAlign: "center" }}>
+                    {item.equipment_quantity}
+                  </TableCell>
+                  <TableCell style={{ textAlign: "center" }}>
+                    {item.equipment_available}
+                  </TableCell>
+                  <TableCell style={{ textAlign: "center" }}>
                     {/* Legg til EventIcon-knappen */}
-                    <IconButton onClick={() => handleOpenEventsModal(item.equipment_id)}>
-  <EventIcon style={{ color: "#1769aa", width: 30, height: 30 }} />
-</IconButton>
+                    <IconButton
+                      onClick={() => handleOpenEventsModal(item.equipment_id,  item.equipment_name)}
+                    >
+                      <EventIcon
+                        style={{ color: "#1769aa", width: 30, height: 30 }}
+                      />
+                    </IconButton>
 
                     {/* Modal for EventsTable */}
                     <Modal
@@ -240,10 +250,11 @@ const EquipmentList = ({ eqId }) => {
                           p: 4,
                         }}
                       >
-                        <EventsTable eqId={currentEqId} />
-                        <Button
-                          onClick={handleCloseEventsModal}
-                        >
+                        <EventsTable
+                          eqId={currentEqId}
+                          selectedEquipmentName={selectedEquipmentName}
+                        />
+                        <Button onClick={handleCloseEventsModal}>
                           Lukk vindu
                         </Button>
                       </Box>
