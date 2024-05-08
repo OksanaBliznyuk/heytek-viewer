@@ -6,9 +6,8 @@
 .eventstable-tittel {
   display: flex;
   flex-direction: column;
- text-align: left;
+  text-align: left;
 }
-
 
 .eventstable-h1 {
   font-family: var(--font-family--text, "Nunito Sans", sans-serif);
@@ -21,9 +20,8 @@
 .eventstable-h2 {
   color: grey;
   font-size: 16px;
- margin-top: -8px;
- text-align: left;
-
+  margin-top: -8px;
+  text-align: left;
 }
 
 .eventstable-header {

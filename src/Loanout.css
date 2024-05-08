@@ -4,18 +4,24 @@ body {
 }
 
 .loan-out-container {
- /* background-color: rgb(197, 228, 217);*/
+  /* background-color: rgb(197, 228, 217);*/
   height: 565px;
 }
 
 .loan-out-header {
   width: 100%;
   height: 60px;
-   display: flex;
+  display: flex;
   flex-direction: row;
   justify-content: space-between;
   text-align: center;
   align-items: center;
+}
+
+.loan-out-tittel {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
 }
 
 .loan-out-h1 {
@@ -26,6 +32,12 @@ body {
   color: #1565c0;
 }
 
+.loan-out-h2 {
+  color: grey;
+  font-size: 16px;
+  margin-top: -8px;
+  text-align: left;
+}
 
 .loan-out-main {
   width: 100%;

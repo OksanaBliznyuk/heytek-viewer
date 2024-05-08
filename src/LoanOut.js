@@ -1,3 +1,4 @@
+//LoanOut.js
 import React, { useState, useEffect } from "react";
 import "./EventsTable.css";
 import "./Loanout.css";
@@ -83,7 +84,7 @@ const LoanOut = ({ eqId }) => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8099/loans?equipment_id=" + eqId)
+      .get("http://localhost:8099/loans?eq_id=" + eqId)
       .then((response) => {
         if (response.data && Array.isArray(response.data.loans)) {
           setLoans(response.data.loans);

@@ -120,7 +120,7 @@ const EquipmentList = ({ eqId }) => {
     <div>
       <div className="equipment-container">
         <div className="eqlist-header">
-          <h4>Equipment List</h4>
+          <h4>Utstyrliste</h4>
         </div>
 
         <TableContainer

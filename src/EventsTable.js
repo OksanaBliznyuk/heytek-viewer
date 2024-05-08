@@ -252,10 +252,10 @@ const EventsTable = ({ eqId, selectedEquipmentName }) => {
                       <h3>Slutt reservering</h3>
                     </TableCell>
                     <TableCell>
-                      <h3>Komment</h3>
+                      <h3>Kommentar</h3>
                     </TableCell>
                     <TableCell>
-                      <h3>Event type</h3>
+                      <h3>type</h3>
                     </TableCell>
                     <TableCell>
                       <h3>{/*Handling*/}</h3>
