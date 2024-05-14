@@ -49,3 +49,9 @@
   flex-direction: row;
   justify-content: space-between;
 }
+
+@media (min-width: 1200px) {
+  .events-main{
+    max-height: 40vh; /* Juster denne verdien etter behov */
+  }
+}

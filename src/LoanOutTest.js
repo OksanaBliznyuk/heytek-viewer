@@ -1,6 +1,10 @@
-// EventsTable.js
+
+
+
+//LoanOut.js
 import React, { useState, useEffect } from "react";
 import "./EventsTable.css";
+import "./Loanout.css";
 import axios from "axios";
 import {
   Table,
@@ -21,11 +25,11 @@ import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Calendar from "./components/Calendar";
 
-const EventsTable = ({ eqId, selectedEquipmentName }) => {
-  console.log("eqId: " + eqId)
+const LoanOut = ({ eqId }) => {
+  console.log("eqId: " + eqId);
   const getInitialEditedFields = () => {
     if (editingRowId === null) {
-      return {};
+      return {}; // Tomt objekt hvis ikke i redigeringsmodus
     }
 
     const editedRow = events.find((event) => event.event_id === editingRowId);
@@ -35,7 +39,7 @@ const EventsTable = ({ eqId, selectedEquipmentName }) => {
       return {};
     }
 
-    // Returnerer de redigerte feltene med verdiene fra den valgte raden
+    // Returner de redigerte feltene med verdiene fra den valgte raden
     return {
       eventuser_name: editedRow.eventuser_name,
       event_quantity: editedRow.event_quantity,
@@ -50,16 +54,16 @@ const EventsTable = ({ eqId, selectedEquipmentName }) => {
   const [editingRowId, setEditingRowId] = useState(null);
   const [editedFields, setEditedFields] = useState(getInitialEditedFields());
   const [isAddingNewItem, setIsAddingNewItem] = useState(false);
-  const [updateKey, setUpdateKey] = useState(0);
+  const [updateKey, setUpdateKey] = useState(0); // Oppdateringsnøkkel
 
   const handleAddNewItem = () => {
     setIsAddingNewItem(true);
 
-    //En ny tom rad i events-statet
+    // Legg til en ny tom rad i events-statet
     setEvents((prevEvents) => [
       ...prevEvents,
       {
-        event_id: Date.now(), //En unik identifikator for hver ny rad
+        event_id: Date.now(), // Bruk en unik identifikator for hver ny rad
         eventuser_name: "",
         event_quantity: "",
         event_startdate: "",
@@ -69,7 +73,7 @@ const EventsTable = ({ eqId, selectedEquipmentName }) => {
       },
     ]);
 
-    //Redigeringsmodus for den nye raden
+    // Sett redigeringsmodus for den nye raden
     setEditingRowId(Date.now());
     setEditedFields({
       eventuser_name: "",
@@ -86,9 +90,7 @@ const EventsTable = ({ eqId, selectedEquipmentName }) => {
       .get("http://localhost:8099/events?equipment_id=" + eqId)
       .then((response) => {
         if (response.data && Array.isArray(response.data.events)) {
-          //Hendelsene sorteres basert på startdato i synkende rekkefølge
-          const sortedEvents = response.data.events.sort((a, b) => new Date(b.event_startdate) - new Date(a.event_startdate));
-          setEvents(sortedEvents);
+          setEvents(response.data.events);
         } else {
           console.error("Invalid data format:", response.data);
         }
@@ -97,10 +99,10 @@ const EventsTable = ({ eqId, selectedEquipmentName }) => {
         console.error("Error fetching events:", error.message);
       });
   }, [eqId, updateKey]);
-  
-  //---------------------------------------------------------------------------------
-  // Ny funksjon for å sende POST-forespørsel og lagre en ny hendelse
-  const saveNewEvent = async () => {
+
+ 
+   // Ny funksjon for å sende POST-forespørsel og lagre en ny hendelse
+   const saveNewEvent = async () => {
     console.log("Saving event with data:", editedFields);
     console.log("eqId:", eqId);
 
@@ -200,11 +202,9 @@ const EventsTable = ({ eqId, selectedEquipmentName }) => {
 
   return (
     <>
-      <div className="events-container">
-        <div className="eventstable-header">
-          <div className="eventstable-tittel">
-          <h1 className="eventstable-h1">{selectedEquipmentName}</h1>  <h2 className="eventstable-h2"> (sjekk reservasjon og reserver utstyr her) </h2>
-          </div>
+      <div className="loan-out-container">
+        <div className="loan-out-header">
+          <h1 className="loan-out-h1">Sjekk utlån og lån ut utstyr her</h1>
           <Button
             className="add-btn"
             variant="contained"
@@ -215,20 +215,20 @@ const EventsTable = ({ eqId, selectedEquipmentName }) => {
               setIsAddingNewItem(true);
               // Oppdaterer editedFields-objektet til å inneholde tomme verdier
               setEditedFields({
-                eventuser_name: "",
-                event_quantity: "",
-                event_startdate: null, //Null hvis det er et dato- eller tidobjekt
-                event_enddate: null,
-                event_comment: "",
-                event_type: "reservering",
+                loantuser_name: "",
+                loan_quantity: "",
+                loan_startdate: null, //Null hvis det er et dato- eller tidobjekt
+                loan_enddate: null,
+                loan_comment: "",
+                loan_type: "reservering",
               });
             }}
           >
-            <AddIcon /> Legg til reservasjon
+            <AddIcon /> Legg til utlån
           </Button>
         </div>
-        <div className="events-main">
-          {events.length >= 0 ? ( //Betingelsen for å sjekke om det er data å vise
+        <div className="eloan-out-main">
+          {events.length >= 0 ? ( //betingelsen for å sjekke om det er data å vise
             <TableContainer
               component={Paper}
               style={{
@@ -248,19 +248,19 @@ const EventsTable = ({ eqId, selectedEquipmentName }) => {
                       <h3>Antall</h3>
                     </TableCell>
                     <TableCell>
-                      <h3>Start reservering</h3>
+                      <h3>Start utlån</h3>
                     </TableCell>
                     <TableCell>
-                      <h3>Slutt reservering</h3>
+                      <h3>Slutt utlån???</h3>
                     </TableCell>
                     <TableCell>
-                      <h3>Kommentar</h3>
+                      <h3>Komment</h3>
                     </TableCell>
                     <TableCell>
-                      <h3>type</h3>
+                      <h3>Event type</h3>
                     </TableCell>
                     <TableCell>
-                      <h3>{/*Handling*/}</h3>
+                      <h3>Handling</h3>
                     </TableCell>
                   </TableRow>
                 </TableHead>
@@ -270,56 +270,56 @@ const EventsTable = ({ eqId, selectedEquipmentName }) => {
                     <TableRow key={editingRowId}>
                       <TableCell>
                         <TextField
-                          value={editedFields.eventuser_name}
+                          value={editedFields.loanuser_name}
                           onChange={(e) =>
-                            handleFieldChange("eventuser_name", e.target.value)
+                            handleFieldChange("loanuser_name", e.target.value)
                           }
                         />
                       </TableCell>
                       <TableCell>
                         <TextField
-                          value={editedFields.event_quantity}
+                          value={editedFields.loan_quantity}
                           onChange={(e) =>
-                            handleFieldChange("event_quantity", e.target.value)
+                            handleFieldChange("loan_quantity", e.target.value)
                           }
                         />
                       </TableCell>
-
                       <TableCell>
                         {/* Calendar-komponenten  */}
                         <Calendar
-                          value={editedFields.event_startdate}
+                          value={editedFields.loan_startdate}
                           onDateTimeChange={(date) =>
-                            handleFieldChange("event_startdate", date)
+                            handleFieldChange("loan_startdate", date)
                           }
                         />
                       </TableCell>
                       <TableCell>
+                        {/* Bruk Calendar-komponenten for å velge sluttdato */}
                         <Calendar
-                          value={editedFields.event_enddate}
+                          value={editedFields.loan_enddate}
                           onDateTimeChange={(date) =>
-                            handleFieldChange("event_enddate", date)
+                            handleFieldChange("loan_enddate", date)
                           }
                         />
                       </TableCell>
                       <TableCell>
                         <TextField
-                          value={editedFields.event_comment}
+                          value={editedFields.loan_comment}
                           onChange={(e) =>
-                            handleFieldChange("event_comment", e.target.value)
+                            handleFieldChange("loan_comment", e.target.value)
                           }
                         />
                       </TableCell>
                       <TableCell>
                         <TextField
-                          value={editedFields.event_type}
+                          value={editedFields.loan_type}
                           onChange={(e) =>
-                            handleFieldChange("event_type", e.target.value)
+                            handleFieldChange("loan_type", e.target.value)
                           }
                         />
                       </TableCell>
                       <TableCell>
-                        <div className="events-icons">
+                        <div className="loan-out-icons">
                           <Button onClick={handleSaveNewEvent}>
                             <SaveIcon />
                           </Button>
@@ -330,8 +330,6 @@ const EventsTable = ({ eqId, selectedEquipmentName }) => {
                       </TableCell>
                     </TableRow>
                   )}
-
-                  {/*Redigering av felter */}
                   {events.map((event) => (
                     <TableRow key={event.event_id}>
                       <TableCell>
@@ -339,10 +337,7 @@ const EventsTable = ({ eqId, selectedEquipmentName }) => {
                           <TextField
                             value={editedFields.eventuser_name}
                             onChange={(e) =>
-                              handleFieldChange(
-                                "eventuser_name",
-                                e.target.value
-                              )
+                              handleFieldChange("loanuser_name", e.target.value)
                             }
                           />
                         ) : (
@@ -354,29 +349,27 @@ const EventsTable = ({ eqId, selectedEquipmentName }) => {
                           <TextField
                             value={editedFields.event_quantity}
                             onChange={(e) =>
-                              handleFieldChange(
-                                "event_quantity",
-                                e.target.value
-                              )
+                              handleFieldChange("event_quantity", e.target.value)
                             }
                           />
                         ) : (
                           event.event_quantity
                         )}
                       </TableCell>
+                      {/* Fortsett slik for resten av feltene */}
                       <TableCell>
                         {editingRowId === event.event_id ? (
                           <TextField
                             value={editedFields.event_startdate}
                             onChange={(e) =>
                               handleFieldChange(
-                                "event_startdate",
+                                "loan_startdate",
                                 e.target.value
                               )
                             }
                           />
                         ) : (
-                          event.event_startdate
+                          event.event_date
                         )}
                       </TableCell>
                       <TableCell>
@@ -384,11 +377,11 @@ const EventsTable = ({ eqId, selectedEquipmentName }) => {
                           <TextField
                             value={editedFields.event_enddate}
                             onChange={(e) =>
-                              handleFieldChange("event_enddate", e.target.value)
+                              handleFieldChange("loan_enddate", e.target.value)
                             }
                           />
                         ) : (
-                          event.event_enddate
+                          event.event_date
                         )}
                       </TableCell>
                       <TableCell>
@@ -418,13 +411,10 @@ const EventsTable = ({ eqId, selectedEquipmentName }) => {
                       {/*Ikoner*/}
                       <TableCell>
                         {editingRowId === event.event_id ? (
-                          <div className="events-icons">
-                            <IconButton
-                              onClick={() => handleSaveClick(event.event_id)}
-                            >
+                          <div className="loan-out-icons">
+                            <IconButton onClick={handleSaveClick}>
                               <SaveIcon style={{ color: "#1565c0" }} />
                             </IconButton>
-
                             <IconButton
                               onClick={() => handleDeleteClick(event.event_id)}
                             >
@@ -461,4 +451,4 @@ const EventsTable = ({ eqId, selectedEquipmentName }) => {
   );
 };
 
-export default EventsTable;
+export default LoanOut;

@@ -239,15 +239,22 @@ const EquipmentList = ({ eqId }) => {
                     >
                       <Box
                         sx={{
-                          position: "absolute",
+                          position: "relative",
                           top: "50%",
                           left: "50%",
                           transform: "translate(-50%, -50%)",
                           width: 1400,
-                          height: 580,
+                          minHeight: 'auto',
                           bgcolor: "background.paper",
                           boxShadow: 24,
                           p: 4,
+
+                          '@media (min-width: 1200px)': {
+                            justifyContent: 'flex-start',
+                            alignItems: 'flex-end',
+                            minWidth: '80vw',
+                            minHeight: '78vh',
+                          }
                         }}
                       >
                         <EventsTable
