@@ -24,8 +24,10 @@ import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import ClearIcon from "@mui/icons-material/Clear";
 import EquipmentlistBtn from "./components/EquipmentlistBtn";
 import HambMenu from "./components/HambMenu";
+import LoanOut from './LoanOut';
 
 const AdminPage = ({}) => {
+  const [selectedEquipmentName, setSelectedEquipmentName] = useState("");
   const [equipment, setEquipment] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [openModalMap, setOpenModalMap] = useState({});
@@ -33,6 +35,7 @@ const AdminPage = ({}) => {
   const [editedData, setEditedData] = useState({});
   const [deletingItem, setDeletingItem] = useState(null);
   const [isAddingItem, setIsAddingItem] = useState(false);
+  
 
   const handleOpen = (item) => {
     setSelectedItem(item);
@@ -317,7 +320,7 @@ const AdminPage = ({}) => {
                               <CreateOutlinedIcon/>
                             </IconButton>
                             {/* Erstatt ikonene med HambMenu */}
-                            <HambMenu eqId={item.equipment_id} item={item} />
+                            <HambMenu eqId={item.equipment_id} />
                           </div>
                         )}
                       </TableCell>

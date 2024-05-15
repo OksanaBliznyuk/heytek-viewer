@@ -21,6 +21,7 @@ import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Calendar from "./components/Calendar";
 
+
 const LoanOut = ({ eqId, selectedEquipmentName }) => {
   console.log("eqId: " + eqId)
   const getInitialEditedFields = () => {
@@ -203,7 +204,7 @@ const LoanOut = ({ eqId, selectedEquipmentName }) => {
       <div className="events-container">
         <div className="eventstable-header">
           <div className="eventstable-tittel">
-          <h1 className="eventstable-h1">{selectedEquipmentName}</h1>  <h2 className="eventstable-h2"> (sjekk reservasjon og reserver utstyr her) </h2>
+          <h1 className="eventstable-h1">{selectedEquipmentName}</h1>  <h2 className="eventstable-h2"> (sjekk utlån og lån ut utstyr her) </h2>
           </div>
           <Button
             className="add-btn"
@@ -248,10 +249,10 @@ const LoanOut = ({ eqId, selectedEquipmentName }) => {
                       <h3>Antall</h3>
                     </TableCell>
                     <TableCell>
-                      <h3>Start reservering</h3>
+                      <h3>Utlånsdato</h3>
                     </TableCell>
                     <TableCell>
-                      <h3>Slutt reservering</h3>
+                      {/*<h3>Slutt reservering</h3>*/}
                     </TableCell>
                     <TableCell>
                       <h3>Kommentar</h3>
@@ -260,7 +261,7 @@ const LoanOut = ({ eqId, selectedEquipmentName }) => {
                       <h3>type</h3>
                     </TableCell>
                     <TableCell>
-                      <h3>{/*Handling*/}</h3>
+                      <h3>Handling</h3>
                     </TableCell>
                   </TableRow>
                 </TableHead>

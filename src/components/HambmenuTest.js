@@ -1,5 +1,5 @@
 
-//HamburgerMeny.js
+//HamburgerMeny.js 15.05.2024
 import React, { useState } from "react";
 import { styled, alpha } from "@mui/material/styles";
 import Button from "@mui/material/Button";
@@ -11,9 +11,6 @@ import Modal from "@mui/material/Modal";
 import EventsTable from "../EventsTable";
 import LoanOut from "../LoanOut";
 import ReturnLoan from "../ReturnLoan";
-import axios from "axios";
-
-
 
 const StyledMenu = styled((props) => (
   <Menu
@@ -80,7 +77,7 @@ export default function CustomizedMenus({ eqId }) {
   const handleOpenModal = (side,) => {
     setModalContent(side);
     setModalOpen(true);
-    handleClose(); 
+    handleClose(); // Lukk menyen når modalen åpnes
   };
 
   const handleCloseModal = () => {
@@ -147,8 +144,8 @@ export default function CustomizedMenus({ eqId }) {
           }}
         >
           {modalContent === "reserver" && <EventsTable eqId={eqId} />}
-          {modalContent === "lånUt" && <LoanOut eqId={eqId}/>}
-          {modalContent === "leverInn" && <ReturnLoan eqId={eqId} />}
+          {modalContent === "lånUt" && <LoanOut />}
+          {modalContent === "leverInn" && <ReturnLoan />}
           <Button onClick={handleCloseModal}>Lukk vindu</Button>
         </div>
       </StyledModal>
