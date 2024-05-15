@@ -17,8 +17,7 @@ import {
   TextField,
   IconButton,
 } from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
-import CreateOutlinedIcon from '@mui/icons-material/CreateOutlined';
+import CreateOutlinedIcon from "@mui/icons-material/CreateOutlined";
 import SaveIcon from "@mui/icons-material/Save";
 import DeleteIcon from "@mui/icons-material/Delete";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
@@ -123,7 +122,6 @@ const AdminPage = ({}) => {
     setIsAddingItem(false);
   };
 
- 
   return (
     <>
       <div className="admin-container" style={{ overflow: "auto" }}>
@@ -144,11 +142,10 @@ const AdminPage = ({}) => {
 
         <div className="admin-main">
           {/*Tabell */}
-
           <div className="equipment-table">
             <TableContainer
               component={Paper}
-              style={{ maxHeight: "65vh", overflowY: "100vw", zIndex: 1002 }}
+              style={{ maxHeight: "70vh", overflowY: "100vw", zIndex: 1002 }}
             >
               <Table size="small">
                 <TableHead className="sticky-header">
@@ -231,32 +228,32 @@ const AdminPage = ({}) => {
                           aria-labelledby="equipment-modal-title"
                           aria-describedby="equipment-modal-description"
                         >
-                          <Box className="admin-info-modal" >
+                          <Box className="admin-info-modal">
                             {selectedItem && (
                               <>
                                 <h2 id="equipment-modal-title">
                                   {selectedItem.equipment_name}
                                 </h2>
-                               
+
                                 <img
                                   src={`/assets/images/${selectedItem.equipment_id}.png`}
                                   alt="Bildebeskrivelse"
                                   className="modal-img"
                                 />
-                             
+
                                 <div className="admin-info">
-                                <p id="equipment-modal-description">
-                                  {selectedItem.equipment_descr}
-                                  <Link
-                                    href={`https://www.google.no/search?q=${encodeURIComponent(
-                                      selectedItem.equipment_name
-                                    )}`}
-                                    underline="always"
-                                    target="_blank"
-                                  >
-                                    {"Trykk her til å finne mer"}
-                                  </Link>
-                                </p>
+                                  <p id="equipment-modal-description">
+                                    {selectedItem.equipment_descr}
+                                    <Link
+                                      href={`https://www.google.no/search?q=${encodeURIComponent(
+                                        selectedItem.equipment_name
+                                      )}`}
+                                      underline="always"
+                                      target="_blank"
+                                    >
+                                      {"Trykk her til å finne mer"}
+                                    </Link>
+                                  </p>
                                 </div>
                                 <Button onClick={handleClose}>
                                   Lukk vindu
@@ -317,7 +314,7 @@ const AdminPage = ({}) => {
                         ) : (
                           <div className="edit-btn">
                             <IconButton onClick={() => handleEditClick(item)}>
-                              <CreateOutlinedIcon style={{ /*color: "#9c27b0"*/ }} />
+                              <CreateOutlinedIcon/>
                             </IconButton>
                             {/* Erstatt ikonene med HambMenu */}
                             <HambMenu eqId={item.equipment_id} item={item} />
@@ -329,10 +326,10 @@ const AdminPage = ({}) => {
                 </TableBody>
               </Table>
             </TableContainer>
-              <div>
-                <Link to="/Equipmentlist">
-                  <EquipmentlistBtn />
-                </Link>
+            <div>
+              <Link to="/Equipmentlist">
+                <EquipmentlistBtn />
+              </Link>
             </div>
           </div>
         </div>

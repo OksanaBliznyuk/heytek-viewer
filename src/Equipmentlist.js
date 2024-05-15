@@ -237,31 +237,14 @@ const EquipmentList = ({ eqId }) => {
                         },
                       }}
                     >
-                      <Box
-                        sx={{
-                          position: "relative",
-                          top: "50%",
-                          left: "50%",
-                          transform: "translate(-50%, -50%)",
-                          width: 1400,
-                          minHeight: 'auto',
-                          bgcolor: "background.paper",
-                          boxShadow: 24,
-                          p: 4,
-
-                          '@media (min-width: 1200px)': {
-                            justifyContent: 'flex-start',
-                            alignItems: 'flex-end',
-                            minWidth: '80vw',
-                            minHeight: '78vh',
-                          }
-                        }}
+                      <Box className="table-box"
+                        
                       >
                         <EventsTable
                           eqId={currentEqId}
                           selectedEquipmentName={selectedEquipmentName}
                         />
-                        <Button onClick={handleCloseEventsModal}>
+                        <Button className="close-window-btn" onClick={handleCloseEventsModal}>
                           Lukk vindu
                         </Button>
                       </Box>

@@ -1,5 +1,7 @@
 .admin-container {
-  width: 90vw;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
   height: auto;
   background-color: white;
   padding-top: 1%;
@@ -7,8 +9,9 @@
 
 .admin-header {
   background: white;
+  width: 90%;
   height: auto;
-  margin-left: 10%;
+  margin-left: 5%;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -45,7 +48,7 @@ h4 {
 .admin-main {
   width: 90%;
   height: auto;
-  margin-left: 10%;
+  margin-left: 5%;
   align-items: center;
 }
 

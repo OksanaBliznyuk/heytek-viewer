@@ -1,7 +1,6 @@
-//LoanOut.js
+// LoanOut.js
 import React, { useState, useEffect } from "react";
 import "./EventsTable.css";
-import "./Loanout.css";
 import axios from "axios";
 import {
   Table,
@@ -22,158 +21,152 @@ import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Calendar from "./components/Calendar";
 
-const LoanOut = ({ eqId }) => {
-  console.log("eqId: " + eqId);
+const LoanOut = ({ eqId, selectedEquipmentName }) => {
+  console.log("eqId: " + eqId)
   const getInitialEditedFields = () => {
     if (editingRowId === null) {
-      return {}; // Tomt objekt hvis ikke i redigeringsmodus
+      return {};
     }
 
-    const editedRow = loans.find((loan) => loan.loan_id === editingRowId);
+    const editedRow = events.find((event) => event.event_id === editingRowId);
     console.log("Edited Row from Backend:", editedRow);
 
     if (!editedRow) {
       return {};
     }
 
-    // Returner de redigerte feltene med verdiene fra den valgte raden
+    // Returnerer de redigerte feltene med verdiene fra den valgte raden
     return {
-      loanuser_name: editedRow.loanuser_name,
-      loan_quantity: editedRow.loan_quantity,
-      loan_startdate: editedRow.loan_startdate,
-      loan_enddate: editedRow.loan_enddate,
-      loan_comment: editedRow.loan_comment,
-      loan_type: editedRow.loan_type,
+      eventuser_name: editedRow.eventuser_name,
+      event_quantity: editedRow.event_quantity,
+      event_startdate: editedRow.event_startdate,
+      event_enddate: editedRow.event_enddate,
+      event_comment: editedRow.event_comment,
+      event_type: editedRow.event_type,
     };
   };
 
-  const [loans, setLoans] = useState([]);
+  const [events, setEvents] = useState([]);
   const [editingRowId, setEditingRowId] = useState(null);
   const [editedFields, setEditedFields] = useState(getInitialEditedFields());
   const [isAddingNewItem, setIsAddingNewItem] = useState(false);
-  const [updateKey, setUpdateKey] = useState(0); // Oppdateringsnøkkel
+  const [updateKey, setUpdateKey] = useState(0);
 
   const handleAddNewItem = () => {
     setIsAddingNewItem(true);
 
-    // Legg til en ny tom rad i events-statet
-    setLoans((prevLoans) => [
-      ...prevLoans,
+    //En ny tom rad i events-statet
+    setEvents((prevEvents) => [
+      ...prevEvents,
       {
-        loan_id: Date.now(), // Bruk en unik identifikator for hver ny rad
-        loanuser_name: "",
-        loan_quantity: "",
-        loan_startdate: "",
-        loan_enddate: "",
-        loan_comment: "",
-        loan_type: "",
+        event_id: Date.now(), //En unik identifikator for hver ny rad
+        eventuser_name: "",
+        event_quantity: "",
+        event_startdate: "",
+        event_enddate: "",
+        event_comment: "",
+        event_type: "",
       },
     ]);
 
-    // Sett redigeringsmodus for den nye raden
+    //Redigeringsmodus for den nye raden
     setEditingRowId(Date.now());
     setEditedFields({
-      loanuser_name: "",
-      loan_quantity: "",
-      loan_startdate: "",
-      loan_enddate: "",
-      loan_comment: "",
-      loan_type: "",
+      eventuser_name: "",
+      event_quantity: "",
+      event_startdate: "",
+      event_enddate: "",
+      event_comment: "",
+      event_type: "",
     });
   };
 
   useEffect(() => {
     axios
-      .get("http://localhost:8099/loans?eq_id=" + eqId)
+      .get("http://localhost:8099/events?equipment_id=" + eqId)
       .then((response) => {
-        if (response.data && Array.isArray(response.data.loans)) {
-          setLoans(response.data.loans);
+        if (response.data && Array.isArray(response.data.events)) {
+          //Hendelsene sorteres basert på startdato i synkende rekkefølge
+          const sortedEvents = response.data.events.sort((a, b) => new Date(b.event_startdate) - new Date(a.event_startdate));
+          setEvents(sortedEvents);
         } else {
           console.error("Invalid data format:", response.data);
         }
       })
       .catch((error) => {
-        console.error("Error fetching loans:", error.message);
+        console.error("Error fetching events:", error.message);
       });
   }, [eqId, updateKey]);
-
- 
-  // Funksjon for å sende POST-forespørsel og lagre en ny hendelse
-  const saveNewLoan = async () => {
-    console.log("Saving loan with data:", editedFields);
+  
+  //---------------------------------------------------------------------------------
+  // Ny funksjon for å sende POST-forespørsel og lagre en ny hendelse
+  const saveNewEvent = async () => {
+    console.log("Saving event with data:", editedFields);
     console.log("eqId:", eqId);
 
     try {
-      const response = await axios.post("http://localhost:8099/loans", {
-        loanuser_name: editedFields.loanuser_name,
-        loan_quantity: editedFields.loan_quantity,
-        loan_startdate: editedFields.loan_startdate,
-        loan_enddate: editedFields.loan_enddate,
-        loan_comment: editedFields.loan_comment,
-        eq_id: eqId,
-        loan_type: "låne", // Hardkodet til reservasjon, kan endres etter behov
+      const response = await axios.post("http://localhost:8099/events", {
+        eventuser_name: editedFields.eventuser_name,
+        event_quantity: editedFields.event_quantity,
+        event_startdate: editedFields.event_startdate,
+        event_enddate: editedFields.event_enddate,
+        event_comment: editedFields.event_comment,
+        eq_id: eqId ,
+        event_type: "reservation",
       });
-      console.log("New loan saved:", response.data);
+      console.log("New event saved:", response.data);
 
-      //En kopi av den nåværende hendelselisten
-      const updatedLoans = [...loans];
+      // Oppdater hendelselisten med den nye hendelsen lagt til øverst
+    setEvents((prevEvents) => [response.data, ...prevEvents]);
 
-      // Legg den nye hendelsen til starten av hendelselisten
-      updatedLoans.unshift(response.data);
-
-      // Logg den oppdaterte hendelselisten for å sjekke om den nye hendelsen er lagt til riktig
-      console.log("Updated loans:", updatedLoans);
-
-      //Oppdater hendelselisten
-      setLoans(updatedLoans);
-
-      //Oppdateringsnøkkelen for å utløse re-henting av data
+   //Oppdateringsnøkkelen for å utløse re-henting av data
       setUpdateKey((prevKey) => prevKey + 1);
     } catch (error) {
-      console.error("Error saving new loan:", error.message);
+      console.error("Error saving new event:", error.message);
     }
   };
 
-  // Legg til en ny hendelsesbehandler for å håndtere lagring av ny hendelse
-  const handleSaveNewLoan = () => {
-    saveNewLoan();
+  //Ny hendelsesbehandler for å håndtere lagring av ny hendelse
+  const handleSaveNewEvent = async () => {
+    await saveNewEvent();
     setIsAddingNewItem(false); // Lukk redigeringsmodus etter at hendelsen er lagret
   };
-  //----------------------------------------------------------------------------------
 
-  const handleEditClick = (loanId) => {
-    // Hendelsen som samsvarer med loanId
-    const selectedLoan = loans.find((loan) => loan.loan_id === loanId);
+  //----------------------------------------------------------------------------------
+  
+  const handleEditClick = (eventId) => {
+    // Hendelsen som samsvarer med eventId
+    const selectedEvent = events.find((event) => event.event_id === eventId);
 
     //Tilstandene til editedFields med dataene fra den valgte hendelsen
     setEditedFields({
-      loanuser_name: selectedLoan.loanuser_name,
-      loan_quantity: selectedLoan.loan_quantity,
-      loan_startdate: selectedLoan.loan_startdate,
-      loan_enddate: selectedLoan.loan_enddate,
-      loan_comment: selectedLoan.loan_comment,
-      loan_type: selectedLoan.loan_type,
+      eventuser_name: selectedEvent.eventuser_name,
+      event_quantity: selectedEvent.event_quantity,
+      event_startdate: selectedEvent.event_startdate,
+      event_enddate: selectedEvent.event_enddate,
+      event_comment: selectedEvent.event_comment,
+      event_type: selectedEvent.event_type,
     });
-    setEditingRowId(loanId);
+
+    setEditingRowId(eventId);
   };
 
-  //----PATCH loan---------------------------------------------------------------------------
-  const handleSaveClick = async (loanId) => {
+  //----PATCH event---------------------------------------------------------------------------
+  const handleSaveClick = async (eventId) => {
     try {
-      // Send en PATCH-forespørsel til backend for å oppdatere hendelsen med den gitte loanId
-      await axios.patch(`http://localhost:8099/loans/${loanId}`, editedFields);
-      console.log("Har lagret, tror jeg");
+      // Send en PATCH-forespørsel til backend for å oppdatere hendelsen med den gitte eventId
+      await axios.patch(`http://localhost:8099/events/${eventId}`, editedFields);
+  console.log("Har lagret, tror jeg");
     } catch (error) {
       console.error("Error saving changes:", error.message);
     }
-    handleCancelEdit();
+    handleCancelEdit();    
     // Hent hendelsene på nytt fra serveren for å oppdatere grensesnittet
-    const response = await axios.get(
-      "http://localhost:8099/loans?equipment_id=" + eqId
-    );
-    setLoans(response.data.loans);
+         const response = await axios.get("http://localhost:8099/events?equipment_id=" + eqId);
+         setEvents(response.data.events);
+   
   };
-
+  
   // Edit i den nye raden
   const handleCancelEdit = () => {
     if (isAddingNewItem) {
@@ -185,30 +178,33 @@ const LoanOut = ({ eqId }) => {
   };
 
   const handleFieldChange = (field, value) => {
-    // Oppdater de redigerte feltene når brukeren endrer verdien i tekstfeltet
+    //Redigerte feltene når brukeren endrer verdien i tekstfeltet
     setEditedFields((prevFields) => ({ ...prevFields, [field]: value }));
   };
 
-  const handleDeleteClick = async (loanId) => {
+  const handleDeleteClick = async (eventId) => {
     const isConfirmed = window.confirm(
-      "Er du sikker på at du vil slette denne utlån?"
+      "Er du sikker på at du vil slette denne reservasjonen?"
     );
     if (isConfirmed) {
       try {
-        await axios.delete(`http://localhost:8099/loans/${loanId}`);
-        console.log("Loan deleted:", loanId);
-        setUpdateKey((prevKey) => prevKey + 1); // Oppdater oppdateringsnøkkelen for å utløse re-henting av data
+        await axios.delete(`http://localhost:8099/events/${eventId}`);
+        console.log("Event deleted:", eventId);
+        setUpdateKey((prevKey) => prevKey + 1); //Oppdateringsnøkkelen for å utløse re-henting av data
       } catch (error) {
-        console.error("Error deleting loan :", error.message);
+        console.error("Error deleting event:", error.message);
+        console.error(eventId);
       }
     }
   };
 
   return (
     <>
-      <div className="loan-out-container">
-        <div className="loan-out-header">
-          <h1 className="loan-out-h1">Sjekk utlån og lån ut utstyr her</h1>
+      <div className="events-container">
+        <div className="eventstable-header">
+          <div className="eventstable-tittel">
+          <h1 className="eventstable-h1">{selectedEquipmentName}</h1>  <h2 className="eventstable-h2"> (sjekk reservasjon og reserver utstyr her) </h2>
+          </div>
           <Button
             className="add-btn"
             variant="contained"
@@ -219,20 +215,20 @@ const LoanOut = ({ eqId }) => {
               setIsAddingNewItem(true);
               // Oppdaterer editedFields-objektet til å inneholde tomme verdier
               setEditedFields({
-                loantuser_name: "",
-                loan_quantity: "",
-                loan_startdate: null, //Null hvis det er et dato- eller tidobjekt
-                loan_enddate: null,
-                loan_comment: "",
-                loan_type: "reservering",
+                eventuser_name: "",
+                event_quantity: "",
+                event_startdate: null, //Null hvis det er et dato- eller tidobjekt
+                event_enddate: null,
+                event_comment: "",
+                event_type: "reservering",
               });
             }}
           >
-            <AddIcon /> Legg til utlån
+            <AddIcon /> Legg til reservasjon
           </Button>
         </div>
-        <div className="eloan-out-main">
-          {loans.length >= 0 ? ( //betingelsen for å sjekke om det er data å vise
+        <div className="events-main">
+          {events.length >= 0 ? ( //Betingelsen for å sjekke om det er data å vise
             <TableContainer
               component={Paper}
               style={{
@@ -252,19 +248,19 @@ const LoanOut = ({ eqId }) => {
                       <h3>Antall</h3>
                     </TableCell>
                     <TableCell>
-                      <h3>Start utlån</h3>
+                      <h3>Start reservering</h3>
                     </TableCell>
                     <TableCell>
-                      <h3>Slutt utlån???</h3>
+                      <h3>Slutt reservering</h3>
                     </TableCell>
                     <TableCell>
-                      <h3>Komment</h3>
+                      <h3>Kommentar</h3>
                     </TableCell>
                     <TableCell>
-                      <h3>Event type</h3>
+                      <h3>type</h3>
                     </TableCell>
                     <TableCell>
-                      <h3>Handling</h3>
+                      <h3>{/*Handling*/}</h3>
                     </TableCell>
                   </TableRow>
                 </TableHead>
@@ -274,57 +270,57 @@ const LoanOut = ({ eqId }) => {
                     <TableRow key={editingRowId}>
                       <TableCell>
                         <TextField
-                          value={editedFields.loanuser_name}
+                          value={editedFields.eventuser_name}
                           onChange={(e) =>
-                            handleFieldChange("loanuser_name", e.target.value)
+                            handleFieldChange("eventuser_name", e.target.value)
                           }
                         />
                       </TableCell>
                       <TableCell>
                         <TextField
-                          value={editedFields.loan_quantity}
+                          value={editedFields.event_quantity}
                           onChange={(e) =>
-                            handleFieldChange("loan_quantity", e.target.value)
+                            handleFieldChange("event_quantity", e.target.value)
                           }
                         />
                       </TableCell>
+
                       <TableCell>
                         {/* Calendar-komponenten  */}
                         <Calendar
-                          value={editedFields.loan_startdate}
+                          value={editedFields.event_startdate}
                           onDateTimeChange={(date) =>
-                            handleFieldChange("loan_startdate", date)
+                            handleFieldChange("event_startdate", date)
                           }
                         />
                       </TableCell>
                       <TableCell>
-                        {/* Bruk Calendar-komponenten for å velge sluttdato */}
                         <Calendar
-                          value={editedFields.loan_enddate}
+                          value={editedFields.event_enddate}
                           onDateTimeChange={(date) =>
-                            handleFieldChange("loan_enddate", date)
+                            handleFieldChange("event_enddate", date)
                           }
                         />
                       </TableCell>
                       <TableCell>
                         <TextField
-                          value={editedFields.loan_comment}
+                          value={editedFields.event_comment}
                           onChange={(e) =>
-                            handleFieldChange("loan_comment", e.target.value)
+                            handleFieldChange("event_comment", e.target.value)
                           }
                         />
                       </TableCell>
                       <TableCell>
                         <TextField
-                          value={editedFields.loan_type}
+                          value={editedFields.event_type}
                           onChange={(e) =>
-                            handleFieldChange("loan_type", e.target.value)
+                            handleFieldChange("event_type", e.target.value)
                           }
                         />
                       </TableCell>
                       <TableCell>
-                        <div className="loan-out-icons">
-                          <Button onClick={handleSaveNewLoan}>
+                        <div className="events-icons">
+                          <Button onClick={handleSaveNewEvent}>
                             <SaveIcon />
                           </Button>
                           <Button onClick={handleCancelEdit}>
@@ -334,97 +330,107 @@ const LoanOut = ({ eqId }) => {
                       </TableCell>
                     </TableRow>
                   )}
-                  {loans.map((loan) => (
-                    <TableRow key={loan.loan_id}>
+
+                  {/*Redigering av felter */}
+                  {events.map((event) => (
+                    <TableRow key={event.event_id}>
                       <TableCell>
-                        {editingRowId === loan.loan_id ? (
+                        {editingRowId === event.event_id ? (
                           <TextField
-                            value={editedFields.loanuser_name}
-                            onChange={(e) =>
-                              handleFieldChange("loanuser_name", e.target.value)
-                            }
-                          />
-                        ) : (
-                          loan.loanuser_name
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {editingRowId === loan.loan_id ? (
-                          <TextField
-                            value={editedFields.loan_quantity}
-                            onChange={(e) =>
-                              handleFieldChange("loan_quantity", e.target.value)
-                            }
-                          />
-                        ) : (
-                          loan.loan_quantity
-                        )}
-                      </TableCell>
-                      {/* Fortsett slik for resten av feltene */}
-                      <TableCell>
-                        {editingRowId === loan.loan_id ? (
-                          <TextField
-                            value={editedFields.loan_startdate}
+                            value={editedFields.eventuser_name}
                             onChange={(e) =>
                               handleFieldChange(
-                                "loan_startdate",
+                                "eventuser_name",
                                 e.target.value
                               )
                             }
                           />
                         ) : (
-                          loan.loan_date
+                          event.eventuser_name
                         )}
                       </TableCell>
                       <TableCell>
-                        {editingRowId === loan.loan_id ? (
+                        {editingRowId === event.event_id ? (
                           <TextField
-                            value={editedFields.loan_enddate}
+                            value={editedFields.event_quantity}
                             onChange={(e) =>
-                              handleFieldChange("loan_enddate", e.target.value)
+                              handleFieldChange(
+                                "event_quantity",
+                                e.target.value
+                              )
                             }
                           />
                         ) : (
-                          loan.loan_date
+                          event.event_quantity
                         )}
                       </TableCell>
                       <TableCell>
-                        {editingRowId === loan.loan_id ? (
+                        {editingRowId === event.event_id ? (
                           <TextField
-                            value={editedFields.loan_comment}
+                            value={editedFields.event_startdate}
                             onChange={(e) =>
-                              handleFieldChange("loan_comment", e.target.value)
+                              handleFieldChange(
+                                "event_startdate",
+                                e.target.value
+                              )
                             }
                           />
                         ) : (
-                          loan.loan_comment
+                          event.event_startdate
                         )}
                       </TableCell>
                       <TableCell>
-                        {editingRowId === loan.loan_id ? (
+                        {editingRowId === event.event_id ? (
                           <TextField
-                            value={editedFields.loan_type}
+                            value={editedFields.event_enddate}
                             onChange={(e) =>
-                              handleFieldChange("loan_type", e.target.value)
+                              handleFieldChange("event_enddate", e.target.value)
                             }
                           />
                         ) : (
-                          loan.loan_type
+                          event.event_enddate
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        {editingRowId === event.event_id ? (
+                          <TextField
+                            value={editedFields.event_comment}
+                            onChange={(e) =>
+                              handleFieldChange("event_comment", e.target.value)
+                            }
+                          />
+                        ) : (
+                          event.event_comment
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        {editingRowId === event.event_id ? (
+                          <TextField
+                            value={editedFields.event_type}
+                            onChange={(e) =>
+                              handleFieldChange("event_type", e.target.value)
+                            }
+                          />
+                        ) : (
+                          event.event_type
                         )}
                       </TableCell>
                       {/*Ikoner*/}
                       <TableCell>
-                        {editingRowId === loan.loan_id ? (
-                          <div className="loan-out-icons">
-                            <IconButton onClick={handleSaveClick}>
+                        {editingRowId === event.event_id ? (
+                          <div className="events-icons">
+                            <IconButton
+                              onClick={() => handleSaveClick(event.event_id)}
+                            >
                               <SaveIcon style={{ color: "#1565c0" }} />
                             </IconButton>
+
                             <IconButton
-                              onClick={() => handleDeleteClick(loan.loan_id)}
+                              onClick={() => handleDeleteClick(event.event_id)}
                             >
                               <DeleteIcon style={{ color: "#ab003c" }} />
                             </IconButton>
-                            <IconButton onClick={() => handleCancelEdit(loan)}>
+                            <IconButton onClick={() => handleCancelEdit(event)}>
                               <ClearIcon style={{ color: "#1565c0" }} />
                             </IconButton>
                           </div>
@@ -433,7 +439,7 @@ const LoanOut = ({ eqId }) => {
                             <Button
                               variant="outlined"
                               style={{ color: "" }}
-                              onClick={() => handleEditClick(loan.loan_id)}
+                              onClick={() => handleEditClick(event.event_id)}
                             >
                               <EditIcon />
                             </Button>
