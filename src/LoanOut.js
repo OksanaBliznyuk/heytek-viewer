@@ -84,7 +84,7 @@ const LoanOut = ({ eqId, selectedEquipmentName }) => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8099/events?equipment_id=" + eqId)
+      .get("http://localhost:8099/events?equipment_id=" + eqId + "&event_type=loan")
       .then((response) => {
         if (response.data && Array.isArray(response.data.events)) {
           //Hendelsene sorteres basert på startdato i synkende rekkefølge
@@ -113,7 +113,7 @@ const LoanOut = ({ eqId, selectedEquipmentName }) => {
         event_enddate: editedFields.event_enddate,
         event_comment: editedFields.event_comment,
         eq_id: eqId ,
-        event_type: "reservation",
+        event_type: "loan",
       });
       console.log("New event saved:", response.data);
 
@@ -123,14 +123,15 @@ const LoanOut = ({ eqId, selectedEquipmentName }) => {
    //Oppdateringsnøkkelen for å utløse re-henting av data
       setUpdateKey((prevKey) => prevKey + 1);
     } catch (error) {
-      console.error("Error saving new event:", error.message);
+      console.error("Error saving new loan event:", error.message);
     }
   };
 
-  //Ny hendelsesbehandler for å håndtere lagring av ny hendelse
+  //Ny hendelsesbehandler for å håndtere lagring av ny "loan" hendelse
   const handleSaveNewEvent = async () => {
     await saveNewEvent();
-    setIsAddingNewItem(false); // Lukk redigeringsmodus etter at hendelsen er lagret
+    setIsAddingNewItem(false);
+    setUpdateKey((prevKey) => prevKey + 1); // Oppdater grensesnittet etter å ha lagt til ny hendelse
   };
 
   //----------------------------------------------------------------------------------
@@ -153,30 +154,33 @@ const LoanOut = ({ eqId, selectedEquipmentName }) => {
   };
 
   //----PATCH event---------------------------------------------------------------------------
-  const handleSaveClick = async (eventId) => {
-    try {
-      // Send en PATCH-forespørsel til backend for å oppdatere hendelsen med den gitte eventId
-      await axios.patch(`http://localhost:8099/events/${eventId}`, editedFields);
-  console.log("Har lagret, tror jeg");
-    } catch (error) {
-      console.error("Error saving changes:", error.message);
-    }
-    handleCancelEdit();    
+const handleSaveClick = async (eventId) => {
+  try {
+    // Send en PATCH-forespørsel til backend for å oppdatere hendelsen med den gitte eventId
+    await axios.patch(`http://localhost:8099/events/${eventId}`, editedFields);
+    console.log("Changes saved successfully.");
+    
     // Hent hendelsene på nytt fra serveren for å oppdatere grensesnittet
-         const response = await axios.get("http://localhost:8099/events?equipment_id=" + eqId);
-         setEvents(response.data.events);
-   
-  };
-  
-  // Edit i den nye raden
-  const handleCancelEdit = () => {
-    if (isAddingNewItem) {
-      setIsAddingNewItem(false);
-      setEditedFields({});
-    } else if (editingRowId !== null) {
-      setEditingRowId(null);
-    }
-  };
+    const response = await axios.get("http://localhost:8099/events?equipment_id=" + eqId + "&event_type=loan");
+    setEvents(response.data.events);
+    
+    setUpdateKey((prevKey) => prevKey + 1); // Oppdater grensesnittet etter å ha lagret endringer
+  } catch (error) {
+    console.error("Error saving changes:", error.message);
+  }
+
+  handleCancelEdit(); // Avslutt redigeringsmodus
+};
+
+// Avslutt redigeringsmodus
+const handleCancelEdit = () => {
+  if (isAddingNewItem) {
+    setIsAddingNewItem(false);
+    setEditedFields({});
+  } else if (editingRowId !== null) {
+    setEditingRowId(null);
+  }
+};
 
   const handleFieldChange = (field, value) => {
     //Redigerte feltene når brukeren endrer verdien i tekstfeltet
@@ -185,7 +189,7 @@ const LoanOut = ({ eqId, selectedEquipmentName }) => {
 
   const handleDeleteClick = async (eventId) => {
     const isConfirmed = window.confirm(
-      "Er du sikker på at du vil slette denne reservasjonen?"
+      "Er du sikker på at du vil slette dette lånet?"
     );
     if (isConfirmed) {
       try {
@@ -221,11 +225,11 @@ const LoanOut = ({ eqId, selectedEquipmentName }) => {
                 event_startdate: null, //Null hvis det er et dato- eller tidobjekt
                 event_enddate: null,
                 event_comment: "",
-                event_type: "reservering",
+                //event_type: "loan",
               });
             }}
           >
-            <AddIcon /> Legg til reservasjon
+            <AddIcon /> Legg til et lån
           </Button>
         </div>
         <div className="events-main">
@@ -252,17 +256,17 @@ const LoanOut = ({ eqId, selectedEquipmentName }) => {
                       <h3>Utlånsdato</h3>
                     </TableCell>
                     <TableCell>
-                      {/*<h3>Slutt reservering</h3>*/}
+                      <h3>Slutt reservering</h3>
                     </TableCell>
                     <TableCell>
                       <h3>Kommentar</h3>
                     </TableCell>
-                    <TableCell>
-                      <h3>type</h3>
+                   <TableCell className="hidden-field">
+                      <h3>Type</h3>
                     </TableCell>
                     <TableCell>
                       <h3>Handling</h3>
-                    </TableCell>
+            </TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -311,7 +315,7 @@ const LoanOut = ({ eqId, selectedEquipmentName }) => {
                           }
                         />
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="hidden-field">
                         <TextField
                           value={editedFields.event_type}
                           onChange={(e) =>
@@ -404,7 +408,7 @@ const LoanOut = ({ eqId, selectedEquipmentName }) => {
                           event.event_comment
                         )}
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="hidden-field">
                         {editingRowId === event.event_id ? (
                           <TextField
                             value={editedFields.event_type}

@@ -10,8 +10,6 @@ import MoreOutlinedIcon from '@mui/icons-material/MoreOutlined';
 import Modal from "@mui/material/Modal";
 import EventsTable from "../EventsTable";
 import LoanOut from "../LoanOut";
-import ReturnLoan from "../ReturnLoan";
-import axios from "axios";
 
 
 
@@ -124,9 +122,6 @@ export default function CustomizedMenus({ eqId }) {
           <MenuItem onClick={() => handleOpenModal("lånUt")} disableRipple>
             Lån ut
           </MenuItem>
-          <MenuItem onClick={() => handleOpenModal("leverInn")} disableRipple>
-            Lever inn
-          </MenuItem>
         </StyledMenu>
       </div>
 
@@ -148,7 +143,6 @@ export default function CustomizedMenus({ eqId }) {
         >
           {modalContent === "reserver" && <EventsTable eqId={eqId} />}
           {modalContent === "lånUt" && <LoanOut eqId={eqId}/>}
-          {modalContent === "leverInn" && <ReturnLoan eqId={eqId} />}
           <Button onClick={handleCloseModal}>Lukk vindu</Button>
         </div>
       </StyledModal>

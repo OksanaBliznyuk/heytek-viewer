@@ -34,10 +34,21 @@
   align-items: center;
 }
 
+.sticky-header {
+  background-color: #eeeeee;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
 .events-main {
   width: 100%;
   margin-top: 0px;
   align-items: center;
+}
+
+.hidden-field {
+  opacity: 0;
 }
 
 .events-icons {

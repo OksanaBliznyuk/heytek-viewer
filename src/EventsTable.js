@@ -256,8 +256,8 @@ const EventsTable = ({ eqId, selectedEquipmentName }) => {
                     <TableCell>
                       <h3>Kommentar</h3>
                     </TableCell>
-                    <TableCell>
-                      <h3>type</h3>
+                    <TableCell className="hidden-field">
+                      <h3>{/*Type*/}</h3>
                     </TableCell>
                     <TableCell>
                       <h3>{/*Handling*/}</h3>
@@ -311,13 +311,13 @@ const EventsTable = ({ eqId, selectedEquipmentName }) => {
                         />
                       </TableCell>
                       <TableCell>
-                        <TextField
+                        <TextField className="hidden-field"
                           value={editedFields.event_type}
                           onChange={(e) =>
                             handleFieldChange("event_type", e.target.value)
                           }
                         />
-                      </TableCell>
+                        </TableCell>
                       <TableCell>
                         <div className="events-icons">
                           <Button onClick={handleSaveNewEvent}>
@@ -405,7 +405,7 @@ const EventsTable = ({ eqId, selectedEquipmentName }) => {
                       </TableCell>
                       <TableCell>
                         {editingRowId === event.event_id ? (
-                          <TextField
+                          <TextField className="hidden-field"
                             value={editedFields.event_type}
                             onChange={(e) =>
                               handleFieldChange("event_type", e.target.value)
