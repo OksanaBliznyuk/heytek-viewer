@@ -21,9 +21,8 @@ import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Calendar from "./components/Calendar";
 
-
 const LoanOut = ({ eqId, selectedEquipmentName }) => {
-  console.log("eqId: " + eqId)
+  console.log("eqId: " + eqId);
   const getInitialEditedFields = () => {
     if (editingRowId === null) {
       return {};
@@ -84,11 +83,15 @@ const LoanOut = ({ eqId, selectedEquipmentName }) => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8099/events?equipment_id=" + eqId + "&event_type=loan")
+      .get(
+        "http://localhost:8099/events?equipment_id=" + eqId + "&event_type=loan"
+      )
       .then((response) => {
         if (response.data && Array.isArray(response.data.events)) {
           //Hendelsene sorteres basert på startdato i synkende rekkefølge
-          const sortedEvents = response.data.events.sort((a, b) => new Date(b.event_startdate) - new Date(a.event_startdate));
+          const sortedEvents = response.data.events.sort(
+            (a, b) => new Date(b.event_startdate) - new Date(a.event_startdate)
+          );
           setEvents(sortedEvents);
         } else {
           console.error("Invalid data format:", response.data);
@@ -98,7 +101,7 @@ const LoanOut = ({ eqId, selectedEquipmentName }) => {
         console.error("Error fetching events:", error.message);
       });
   }, [eqId, updateKey]);
-  
+
   //---------------------------------------------------------------------------------
   // Ny funksjon for å sende POST-forespørsel og lagre en ny hendelse
   const saveNewEvent = async () => {
@@ -112,15 +115,15 @@ const LoanOut = ({ eqId, selectedEquipmentName }) => {
         event_startdate: editedFields.event_startdate,
         event_enddate: editedFields.event_enddate,
         event_comment: editedFields.event_comment,
-        eq_id: eqId ,
+        eq_id: eqId,
         event_type: "loan",
       });
       console.log("New event saved:", response.data);
 
       // Oppdater hendelselisten med den nye hendelsen lagt til øverst
-    setEvents((prevEvents) => [response.data, ...prevEvents]);
+      setEvents((prevEvents) => [response.data, ...prevEvents]);
 
-   //Oppdateringsnøkkelen for å utløse re-henting av data
+      //Oppdateringsnøkkelen for å utløse re-henting av data
       setUpdateKey((prevKey) => prevKey + 1);
     } catch (error) {
       console.error("Error saving new loan event:", error.message);
@@ -135,7 +138,7 @@ const LoanOut = ({ eqId, selectedEquipmentName }) => {
   };
 
   //----------------------------------------------------------------------------------
-  
+
   const handleEditClick = (eventId) => {
     // Hendelsen som samsvarer med eventId
     const selectedEvent = events.find((event) => event.event_id === eventId);
@@ -154,33 +157,38 @@ const LoanOut = ({ eqId, selectedEquipmentName }) => {
   };
 
   //----PATCH event---------------------------------------------------------------------------
-const handleSaveClick = async (eventId) => {
-  try {
-    // Send en PATCH-forespørsel til backend for å oppdatere hendelsen med den gitte eventId
-    await axios.patch(`http://localhost:8099/events/${eventId}`, editedFields);
-    console.log("Changes saved successfully.");
-    
-    // Hent hendelsene på nytt fra serveren for å oppdatere grensesnittet
-    const response = await axios.get("http://localhost:8099/events?equipment_id=" + eqId + "&event_type=loan");
-    setEvents(response.data.events);
-    
-    setUpdateKey((prevKey) => prevKey + 1); // Oppdater grensesnittet etter å ha lagret endringer
-  } catch (error) {
-    console.error("Error saving changes:", error.message);
-  }
+  const handleSaveClick = async (eventId) => {
+    try {
+      // Send en PATCH-forespørsel til backend for å oppdatere hendelsen med den gitte eventId
+      await axios.patch(
+        `http://localhost:8099/events/${eventId}`,
+        editedFields
+      );
+      console.log("Changes saved successfully.");
 
-  handleCancelEdit(); // Avslutt redigeringsmodus
-};
+      // Hent hendelsene på nytt fra serveren for å oppdatere grensesnittet
+      const response = await axios.get(
+        "http://localhost:8099/events?equipment_id=" + eqId + "&event_type=loan"
+      );
+      setEvents(response.data.events);
 
-// Avslutt redigeringsmodus
-const handleCancelEdit = () => {
-  if (isAddingNewItem) {
-    setIsAddingNewItem(false);
-    setEditedFields({});
-  } else if (editingRowId !== null) {
-    setEditingRowId(null);
-  }
-};
+      setUpdateKey((prevKey) => prevKey + 1); // Oppdater grensesnittet etter å ha lagret endringer
+    } catch (error) {
+      console.error("Error saving changes:", error.message);
+    }
+
+    handleCancelEdit(); // Avslutt redigeringsmodus
+  };
+
+  // Avslutt redigeringsmodus
+  const handleCancelEdit = () => {
+    if (isAddingNewItem) {
+      setIsAddingNewItem(false);
+      setEditedFields({});
+    } else if (editingRowId !== null) {
+      setEditingRowId(null);
+    }
+  };
 
   const handleFieldChange = (field, value) => {
     //Redigerte feltene når brukeren endrer verdien i tekstfeltet
@@ -208,7 +216,11 @@ const handleCancelEdit = () => {
       <div className="events-container">
         <div className="eventstable-header">
           <div className="eventstable-tittel">
-          <h1 className="eventstable-h1">{selectedEquipmentName}</h1>  <h2 className="eventstable-h2"> (sjekk utlån og lån ut utstyr her) </h2>
+            <h1 className="eventstable-h1">{selectedEquipmentName}</h1>{" "}
+            <h2 className="eventstable-h2">
+              {" "}
+              (sjekk utlån og lån ut utstyr her){" "}
+            </h2>
           </div>
           <Button
             className="add-btn"
@@ -261,12 +273,12 @@ const handleCancelEdit = () => {
                     <TableCell>
                       <h3>Kommentar</h3>
                     </TableCell>
-                   <TableCell className="hidden-field">
+                    <TableCell className="hidden-field">
                       <h3>Type</h3>
                     </TableCell>
                     <TableCell>
-                      <h3>Handling</h3>
-            </TableCell>
+                      <h3>{/*Handling*/}</h3>
+                    </TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>

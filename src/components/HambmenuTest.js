@@ -1,5 +1,5 @@
 
-//HamburgerMeny.js 15.05.2024
+//HamburgerMeny.js 29.05
 import React, { useState } from "react";
 import { styled, alpha } from "@mui/material/styles";
 import Button from "@mui/material/Button";
@@ -10,7 +10,8 @@ import MoreOutlinedIcon from '@mui/icons-material/MoreOutlined';
 import Modal from "@mui/material/Modal";
 import EventsTable from "../EventsTable";
 import LoanOut from "../LoanOut";
-import ReturnLoan from "../ReturnLoan";
+
+
 
 const StyledMenu = styled((props) => (
   <Menu
@@ -55,6 +56,7 @@ const StyledMenu = styled((props) => (
   },
 }));
 
+
 export default function CustomizedMenus({ eqId }) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -77,7 +79,7 @@ export default function CustomizedMenus({ eqId }) {
   const handleOpenModal = (side,) => {
     setModalContent(side);
     setModalOpen(true);
-    handleClose(); // Lukk menyen når modalen åpnes
+    handleClose(); 
   };
 
   const handleCloseModal = () => {
@@ -121,9 +123,6 @@ export default function CustomizedMenus({ eqId }) {
           <MenuItem onClick={() => handleOpenModal("lånUt")} disableRipple>
             Lån ut
           </MenuItem>
-          <MenuItem onClick={() => handleOpenModal("leverInn")} disableRipple>
-            Lever inn
-          </MenuItem>
         </StyledMenu>
       </div>
 
@@ -144,8 +143,7 @@ export default function CustomizedMenus({ eqId }) {
           }}
         >
           {modalContent === "reserver" && <EventsTable eqId={eqId} />}
-          {modalContent === "lånUt" && <LoanOut />}
-          {modalContent === "leverInn" && <ReturnLoan />}
+          {modalContent === "lånUt" && <LoanOut eqId={eqId}/>}
           <Button onClick={handleCloseModal}>Lukk vindu</Button>
         </div>
       </StyledModal>

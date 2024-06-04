@@ -26,8 +26,9 @@ import EquipmentlistBtn from "./components/EquipmentlistBtn";
 import HambMenu from "./components/HambMenu";
 import LoanOut from './LoanOut';
 
-const AdminPage = ({}) => {
+const AdminPage = ({ eqId }) => {
   const [selectedEquipmentName, setSelectedEquipmentName] = useState("");
+  const [currentEqId, setCurrentEqId] = useState(null);
   const [equipment, setEquipment] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [openModalMap, setOpenModalMap] = useState({});
@@ -37,8 +38,10 @@ const AdminPage = ({}) => {
   const [isAddingItem, setIsAddingItem] = useState(false);
   
 
-  const handleOpen = (item) => {
+  const handleOpen = (item, eqId, equipmentName) => {
     setSelectedItem(item);
+    setCurrentEqId(eqId);
+    setSelectedEquipmentName(equipmentName);
     setOpenModalMap((prev) => ({ ...prev, [item.equipment_id]: true }));
   };
 
@@ -320,7 +323,9 @@ const AdminPage = ({}) => {
                               <CreateOutlinedIcon/>
                             </IconButton>
                             {/* Erstatt ikonene med HambMenu */}
-                            <HambMenu eqId={item.equipment_id} />
+                            <HambMenu eqId={item.equipment_id} selectedEquipmentName={item.equipment_name} />
+
+
                           </div>
                         )}
                       </TableCell>

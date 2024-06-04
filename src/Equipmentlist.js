@@ -49,9 +49,11 @@ const EquipmentList = ({ eqId }) => {
   const [selectedEquipmentName, setSelectedEquipmentName] = useState("");
 
   // Legg til useState for newEquipment
-  const [newEquipment, setNewEquipment] = useState({ equipment_name: "", equipment_quantity: 0, equipment_available: 0 });
-
- 
+  const [newEquipment, setNewEquipment] = useState({
+    equipment_name: "",
+    equipment_quantity: 0,
+    equipment_available: 0,
+  });
 
   const overlayStyle = {
     position: "fixed",
@@ -123,7 +125,10 @@ const EquipmentList = ({ eqId }) => {
 
   const addEquipment = async (newEquipment) => {
     try {
-      const response = await axios.post("http://localhost:8099/equipment", newEquipment);
+      const response = await axios.post(
+        "http://localhost:8099/equipment",
+        newEquipment
+      );
       setEquipment([...equipment, response.data]);
       console.log("New equipment added:", response.data);
     } catch (error) {
@@ -133,8 +138,15 @@ const EquipmentList = ({ eqId }) => {
 
   const updateEquipment = async (id, updatedFields) => {
     try {
-      const response = await axios.patch(`http://localhost:8099/equipment/${id}`, updatedFields);
-      setEquipment(equipment.map(item => (item.equipment_id === id ? response.data : item)));
+      const response = await axios.patch(
+        `http://localhost:8099/equipment/${id}`,
+        updatedFields
+      );
+      setEquipment(
+        equipment.map((item) =>
+          item.equipment_id === id ? response.data : item
+        )
+      );
       console.log("Equipment updated:", response.data);
     } catch (error) {
       console.error("Error updating equipment:", error);
@@ -143,7 +155,11 @@ const EquipmentList = ({ eqId }) => {
 
   const handleAddNewEquipment = () => {
     addEquipment(newEquipment);
-    setNewEquipment({ equipment_name: "", equipment_quantity: 0, equipment_available: 0 });
+    setNewEquipment({
+      equipment_name: "",
+      equipment_quantity: 0,
+      equipment_available: 0,
+    });
   };
 
   const handleUpdateEquipment = (id) => {
@@ -254,7 +270,12 @@ const EquipmentList = ({ eqId }) => {
                   <TableCell style={{ textAlign: "center" }}>
                     {/* Legg til EventIcon-knappen */}
                     <IconButton
-                      onClick={() => handleOpenEventsModal(item.equipment_id,  item.equipment_name)}
+                      onClick={() =>
+                        handleOpenEventsModal(
+                          item.equipment_id,
+                          item.equipment_name
+                        )
+                      }
                     >
                       <EventIcon
                         style={{ color: "#1769aa", width: 30, height: 30 }}
@@ -276,14 +297,15 @@ const EquipmentList = ({ eqId }) => {
                         },
                       }}
                     >
-                      <Box className="table-box"
-                        
-                      >
+                      <Box className="table-box">
                         <EventsTable
                           eqId={currentEqId}
                           selectedEquipmentName={selectedEquipmentName}
                         />
-                        <Button className="close-window-btn" onClick={handleCloseEventsModal}>
+                        <Button
+                          className="close-window-btn"
+                          onClick={handleCloseEventsModal}
+                        >
                           Lukk vindu
                         </Button>
                       </Box>

@@ -1,4 +1,3 @@
-
 //HamburgerMeny.js
 import React, { useState } from "react";
 import { styled, alpha } from "@mui/material/styles";
@@ -6,12 +5,10 @@ import Button from "@mui/material/Button";
 import { IconButton } from "@mui/material";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import MoreOutlinedIcon from '@mui/icons-material/MoreOutlined';
+import MoreOutlinedIcon from "@mui/icons-material/MoreOutlined";
 import Modal from "@mui/material/Modal";
 import EventsTable from "../EventsTable";
 import LoanOut from "../LoanOut";
-
-
 
 const StyledMenu = styled((props) => (
   <Menu
@@ -56,10 +53,13 @@ const StyledMenu = styled((props) => (
   },
 }));
 
-export default function CustomizedMenus({ eqId }) {
+export default function CustomizedMenus({ eqId, selectedEquipmentName }) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState("");
+  const [equipment, setEquipment] = useState([]);
+  const [currentEqId, setCurrentEqId] = useState(null);
+  const [currentSelectedEquipmentName, setCurrentSelectedEquipmentName] = useState("");
   const open = Boolean(anchorEl);
 
   const handleClick = (event) => {
@@ -75,11 +75,13 @@ export default function CustomizedMenus({ eqId }) {
     justifyContent: "center",
   }));
 
-  const handleOpenModal = (side,) => {
-    setModalContent(side);
+  const handleOpenModal = (action, eqId, selectedEquipmentName) => {
+    setCurrentEqId(eqId);
+    setCurrentSelectedEquipmentName(selectedEquipmentName);
+    setModalContent(action);
     setModalOpen(true);
-    handleClose(); 
   };
+  
 
   const handleCloseModal = () => {
     setModalOpen(false);
@@ -95,8 +97,12 @@ export default function CustomizedMenus({ eqId }) {
         }}
       >
         <IconButton
-         variant="outlined"
-        style={{/*color:"#1565c0"*/}}
+          variant="outlined"
+          style={
+            {
+              /*color:"#1565c0"*/
+            }
+          }
           id="demo-customized-button"
           aria-controls={open ? "demo-customized-menu" : undefined}
           aria-haspopup="true"
@@ -104,7 +110,7 @@ export default function CustomizedMenus({ eqId }) {
           disableElevation
           onClick={handleClick}
         >
-          <MoreOutlinedIcon/>
+          <MoreOutlinedIcon />
         </IconButton>
 
         <StyledMenu
@@ -116,10 +122,16 @@ export default function CustomizedMenus({ eqId }) {
           open={open}
           onClose={handleClose}
         >
-          <MenuItem onClick={() => handleOpenModal("reserver")} disableRipple>
+          <MenuItem
+            onClick={() => handleOpenModal("reserver", eqId, selectedEquipmentName)}
+            disableRipple
+          >
             Reserver
           </MenuItem>
-          <MenuItem onClick={() => handleOpenModal("lånUt")} disableRipple>
+          <MenuItem
+            onClick={() => handleOpenModal("lånUt", eqId, selectedEquipmentName)}
+            disableRipple
+          >
             Lån ut
           </MenuItem>
         </StyledMenu>
@@ -141,8 +153,18 @@ export default function CustomizedMenus({ eqId }) {
             maxHeight: "80%",
           }}
         >
-          {modalContent === "reserver" && <EventsTable eqId={eqId} />}
-          {modalContent === "lånUt" && <LoanOut eqId={eqId}/>}
+          {modalContent === "reserver" && (
+            <EventsTable
+              eqId={currentEqId}
+              selectedEquipmentName={currentSelectedEquipmentName} // Passing prop
+            />
+          )}
+          {modalContent === "lånUt" && (
+            <LoanOut
+              eqId={currentEqId}
+              selectedEquipmentName={currentSelectedEquipmentName} // Passing prop
+            />
+          )}
           <Button onClick={handleCloseModal}>Lukk vindu</Button>
         </div>
       </StyledModal>
