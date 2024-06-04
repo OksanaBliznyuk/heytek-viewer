@@ -1,4 +1,4 @@
-//AdminPage
+//AdminPage oppdatert 04.06
 import React, { useState, useEffect } from "react";
 import "./AdminPage.css";
 import axios from "axios";
@@ -16,28 +16,32 @@ import {
   Modal,
   TextField,
   IconButton,
-  TablePagination,
 } from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
-import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import CreateOutlinedIcon from "@mui/icons-material/CreateOutlined";
 import SaveIcon from "@mui/icons-material/Save";
+import DeleteIcon from "@mui/icons-material/Delete";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import ClearIcon from "@mui/icons-material/Clear";
 import EquipmentlistBtn from "./components/EquipmentlistBtn";
 import HambMenu from "./components/HambMenu";
+import LoanOut from './LoanOut';
 
-const AdminPage = ({}) => {
+const AdminPage = ({ eqId }) => {
+  const [selectedEquipmentName, setSelectedEquipmentName] = useState("");
+  const [currentEqId, setCurrentEqId] = useState(null);
   const [equipment, setEquipment] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [openModalMap, setOpenModalMap] = useState({});
   const [editingItem, setEditingItem] = useState(null);
   const [editedData, setEditedData] = useState({});
+  const [deletingItem, setDeletingItem] = useState(null);
   const [isAddingItem, setIsAddingItem] = useState(false);
-  const [page, setPage] = useState(0); // Tilstand for å lagre gjeldende side
-  const [rowsPerPage, setRowsPerPage] = useState(10); // Tilstand for å lagre antall rader per side
+  
 
-  const handleOpen = (item) => {
+  const handleOpen = (item, eqId, equipmentName) => {
     setSelectedItem(item);
+    setCurrentEqId(eqId);
+    setSelectedEquipmentName(equipmentName);
     setOpenModalMap((prev) => ({ ...prev, [item.equipment_id]: true }));
   };
 
@@ -88,13 +92,13 @@ const AdminPage = ({}) => {
     console.log("Endringer lagret for rad:", item);
   };
 
-  const handleInactivateClick = (item) => {
+  const handleDeleteItemClick = (item) => {
     const isConfirmed = window.confirm(
-      "Er du sikker på at du vil inaktivere dette utstyret?"
+      "Er du sikker på at du vil slette dette utstyret?"
     );
     if (isConfirmed) {
-      // Legg til logikk for å inaktivere raden her!!!
-      console.log("Inaktiver rad:", item);
+      // Legg til logikk for å slette raden her!!!
+      console.log("Slett rad:", item);
     }
   };
 
@@ -124,15 +128,6 @@ const AdminPage = ({}) => {
     setIsAddingItem(false);
   };
 
-  const handleChangePage = (admin, newPage) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (admin) => {
-    setRowsPerPage(parseInt(admin.target.value, 10));
-    setPage(0);
-  };
-
   return (
     <>
       <div className="admin-container" style={{ overflow: "auto" }}>
@@ -156,7 +151,7 @@ const AdminPage = ({}) => {
           <div className="equipment-table">
             <TableContainer
               component={Paper}
-              style={{ maxHeight: "65vh", overflowY: "100vw", zIndex: 1002 }}
+              style={{ maxHeight: "70vh", overflowY: "100vw", zIndex: 1002 }}
             >
               <Table size="small">
                 <TableHead className="sticky-header">
@@ -174,6 +169,7 @@ const AdminPage = ({}) => {
                 </TableHead>
                 <TableBody>
                   {/*Ny rad for å legge til utstyr */}
+
                   {isAddingItem && (
                     <TableRow key={editingItem?.equipment_id}>
                       <TableCell>
@@ -201,6 +197,9 @@ const AdminPage = ({}) => {
                           ""
                         )}
                       </TableCell>
+
+                      {/*Ikoner i feltet */}
+
                       <TableCell>
                         {editingItem ? (
                           <div className="save-cancel-btn">
@@ -214,11 +213,7 @@ const AdminPage = ({}) => {
                         ) : (
                           ""
                         )}
-                        </TableCell>
-                      {equipment.map((item) => (
-                        <TableRow key={item.equipment_id}>
-                        </TableRow>
-                      ))}
+                      </TableCell>
                     </TableRow>
                   )}
 
@@ -239,29 +234,33 @@ const AdminPage = ({}) => {
                           aria-labelledby="equipment-modal-title"
                           aria-describedby="equipment-modal-description"
                         >
-                          <Box sx={{ width: 500, height: 500 }}>
+                          <Box className="admin-info-modal">
                             {selectedItem && (
                               <>
                                 <h2 id="equipment-modal-title">
                                   {selectedItem.equipment_name}
                                 </h2>
+
                                 <img
                                   src={`/assets/images/${selectedItem.equipment_id}.png`}
                                   alt="Bildebeskrivelse"
                                   className="modal-img"
                                 />
-                                <p id="equipment-modal-description">
-                                  {selectedItem.equipment_descr}
-                                  <Link
-                                    href={`https://www.google.no/search?q=${encodeURIComponent(
-                                      selectedItem.equipment_name
-                                    )}`}
-                                    underline="always"
-                                    target="_blank"
-                                  >
-                                    {"Trykk her til å finne mer"}
-                                  </Link>
-                                </p>
+
+                                <div className="admin-info">
+                                  <p id="equipment-modal-description">
+                                    {selectedItem.equipment_descr}
+                                    <Link
+                                      href={`https://www.google.no/search?q=${encodeURIComponent(
+                                        selectedItem.equipment_name
+                                      )}`}
+                                      underline="always"
+                                      target="_blank"
+                                    >
+                                      {"Trykk her til å finne mer"}
+                                    </Link>
+                                  </p>
+                                </div>
                                 <Button onClick={handleClose}>
                                   Lukk vindu
                                 </Button>
@@ -300,32 +299,45 @@ const AdminPage = ({}) => {
                         )}
                       </TableCell>
 
+                      {/*Ikoner under HANDLE-cell */}
+
                       <TableCell className="handle-cell">
-                         {/* Erstatt ikonene med HambMenu */}
-                         <HambMenu eqId={item.equipment_id} item={item} />
+                        {item.equipment_status}
+                        {editingItem === item ? (
+                          <div className="save-cancel-btn">
+                            <IconButton onClick={() => handleSaveClick(item)}>
+                              <SaveIcon style={{ color: "#1565c0" }} />
+                            </IconButton>
+                            <IconButton
+                              onClick={() => handleDeleteItemClick(item)}
+                            >
+                              <DeleteIcon style={{ color: "#ab003c" }} />
+                            </IconButton>
+                            <IconButton onClick={() => handleCancelEdit()}>
+                              <ClearIcon style={{ color: "#1565c0" }} />
+                            </IconButton>
+                          </div>
+                        ) : (
+                          <div className="edit-btn">
+                            <IconButton onClick={() => handleEditClick(item)}>
+                              <CreateOutlinedIcon/>
+                            </IconButton>
+                            {/* Erstatt ikonene med HambMenu */}
+                            <HambMenu eqId={item.equipment_id} selectedEquipmentName={item.equipment_name} />
+
+
+                          </div>
+                        )}
                       </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
             </TableContainer>
-
-            {/*PAGINERING*/}
-            <div className="pagination-and-btn">
-              <div>
-                <Link to="/Equipmentlist">
-                  <EquipmentlistBtn />
-                </Link>
-              </div>
-              <TablePagination
-                rowsPerPageOptions={[10, 25]}
-                component="div"
-                count={equipment.length} // Totalt antall rader i tabellen
-                rowsPerPage={rowsPerPage} // Antall rader per side
-                page={page} // Gjeldende side
-                onPageChange={handleChangePage} // Hendelsesbehandling for sideendring
-                onRowsPerPageChange={handleChangeRowsPerPage} // Hendelsesbehandling for endring av antall rader per side
-              />
+            <div>
+              <Link to="/Equipmentlist">
+                <EquipmentlistBtn />
+              </Link>
             </div>
           </div>
         </div>

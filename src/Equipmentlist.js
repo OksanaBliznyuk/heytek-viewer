@@ -123,53 +123,6 @@ const EquipmentList = ({ eqId }) => {
     setEventsModalOpen(false);
   };
 
-  const addEquipment = async (newEquipment) => {
-    try {
-      const response = await axios.post(
-        "http://localhost:8099/equipment",
-        newEquipment
-      );
-      setEquipment([...equipment, response.data]);
-      console.log("New equipment added:", response.data);
-    } catch (error) {
-      console.error("Error adding new equipment:", error);
-    }
-  };
-
-  const updateEquipment = async (id, updatedFields) => {
-    try {
-      const response = await axios.patch(
-        `http://localhost:8099/equipment/${id}`,
-        updatedFields
-      );
-      setEquipment(
-        equipment.map((item) =>
-          item.equipment_id === id ? response.data : item
-        )
-      );
-      console.log("Equipment updated:", response.data);
-    } catch (error) {
-      console.error("Error updating equipment:", error);
-    }
-  };
-
-  const handleAddNewEquipment = () => {
-    addEquipment(newEquipment);
-    setNewEquipment({
-      equipment_name: "",
-      equipment_quantity: 0,
-      equipment_available: 0,
-    });
-  };
-
-  const handleUpdateEquipment = (id) => {
-    const updatedFields = {
-      equipment_name: selectedItem.equipment_name,
-      equipment_quantity: selectedItem.equipment_quantity,
-      equipment_available: selectedItem.equipment_available,
-    };
-    updateEquipment(id, updatedFields);
-  };
 
   return (
     <div>
