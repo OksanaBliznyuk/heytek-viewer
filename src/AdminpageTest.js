@@ -1,4 +1,4 @@
-//AdminPage oppdatert 04.06
+//AdminPage 05.06
 import React, { useState, useEffect } from "react";
 import "./AdminPage.css";
 import axios from "axios";
@@ -24,7 +24,6 @@ import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import ClearIcon from "@mui/icons-material/Clear";
 import EquipmentlistBtn from "./components/EquipmentlistBtn";
 import HambMenu from "./components/HambMenu";
-import LoanOut from './LoanOut';
 
 const AdminPage = ({ eqId }) => {
   const [selectedEquipmentName, setSelectedEquipmentName] = useState("");
@@ -36,7 +35,6 @@ const AdminPage = ({ eqId }) => {
   const [editedData, setEditedData] = useState({});
   const [deletingItem, setDeletingItem] = useState(null);
   const [isAddingItem, setIsAddingItem] = useState(false);
-  
 
   const handleOpen = (item, eqId, equipmentName) => {
     setSelectedItem(item);
@@ -66,6 +64,7 @@ const AdminPage = ({ eqId }) => {
 
     fetchEquipmentData();
   }, []);
+
   const handleButtonClick = (item) => {
     handleOpen(item);
   };
@@ -74,34 +73,54 @@ const AdminPage = ({ eqId }) => {
     setEditingItem(item);
     setEditedData({
       equipment_name: item.equipment_name,
+      equipment_quantity: item.equipment_quantity,
+      equipment_descr: item.equipment_descr,
+      equipment_img: item.equipment_img,
       // Legg til andre felt etter behov
     });
   };
 
+  // PUT/PATCH
   const handleCancelEdit = () => {
     setEditingItem(null);
     setEditedData({});
   };
 
-  const handleSaveClick = (item) => {
-    // Gjør nødvendige operasjoner for å lagre endringene, for eksempel en API-forespørsel
-    // Deretter avslutt redigeringsmodus ved å tilbakestille editingItem-tilstanden
-    setEditingItem(null);
-    setEditedData({});
-    // Gjør eventuelle andre nødvendige ting, for eksempel oppdatering av dataene på serveren eller lokal tilstand
-    console.log("Endringer lagret for rad:", item);
-  };
+  const handleSaveClick = async (item) => {
+    try {
+      const response = await axios.patch(
+        `http://localhost:8099/equipment/${item.equipment_id}`,
+        editedData
+      );
+       // Update the equipment state with the modified equipment
+       setEquipment((prevEquipment) =>
+       prevEquipment.map((equip) =>
+         equip.equipment_id === item.equipment_id ? response.data : equip
+       )
+     );
+     setEditingItem(null);
+     setEditedData({});
+     console.log("Equipment updated:", response.data);
+   } catch (error) {
+     console.error("Error updating equipment:", error);
+   }
+ };
 
-  const handleDeleteItemClick = (item) => {
+// DELETE
+  const handleDeleteItemClick = async (item) => {
     const isConfirmed = window.confirm(
       "Er du sikker på at du vil slette dette utstyret?"
     );
     if (isConfirmed) {
-      // Legg til logikk for å slette raden her!!!
-      console.log("Slett rad:", item);
+      try {
+        await axios.delete(`http://localhost:8099/equipment/${item.equipment_id}`);
+        setEquipment(equipment.filter((equip) => equip.equipment_id !== item.equipment_id));
+        console.log("Deleted equipment:", item);
+      } catch (error) {
+        console.error("Error deleting equipment:", error);
+      }
     }
   };
-
   const handleEditFieldChange = (e, field) => {
     setEditedData((prev) => ({ ...prev, [field]: e.target.value }));
   };
@@ -109,24 +128,37 @@ const AdminPage = ({ eqId }) => {
   const handleAddItemClick = () => {
     setIsAddingItem(true);
     setEditingItem({
-      equipment_name: "", // Sett standardverdier eller la være tom
+      equipment_name: "", 
       equipment_quantity: 0,
       equipment_descr: "",
       equipment_img: "",
 
       // ... andre felt for det nye utstyret
     });
+
+    setEditedData({
+      equipment_name: "",
+      equipment_quantity: 0,
+      equipment_descr: "",
+      equipment_img: ""
+    });
   };
 
-  const handleSaveNewItem = () => {
-    // Gjør nødvendige operasjoner for å lagre det nye utstyret
-    // For eksempel, send en API-forespørsel for å lagre dataene på serveren
-    // Oppdater deretter utstyrslisten og avslutt redigeringsmodus
-    setEquipment((prevEquipment) => [...prevEquipment, editingItem]);
+
+// POST
+const handleSaveNewItem = async () => {
+  try {
+    const response = await axios.post("http://localhost:8099/equipment", editedData);
+    // Add the new item to the equipment state
+    setEquipment((prevEquipment) => [...prevEquipment, response.data]);
     setEditingItem(null);
     setEditedData({});
     setIsAddingItem(false);
-  };
+    console.log("New equipment added:", response.data);
+  } catch (error) {
+    console.error("Error adding new equipment:", error);
+  }
+};
 
   return (
     <>
@@ -134,6 +166,7 @@ const AdminPage = ({ eqId }) => {
         <div className="admin-header">
           <h4>Admin Side</h4>
           <h3 className="admin-h3">Utstyrslisten</h3>
+
           {/*+Legg til btn */}
           <Button
             className="add-btn"
@@ -203,7 +236,7 @@ const AdminPage = ({ eqId }) => {
                       <TableCell>
                         {editingItem ? (
                           <div className="save-cancel-btn">
-                            <Button onClick={() => handleSaveNewItem()}>
+                             <Button onClick={handleSaveNewItem}>
                               <SaveIcon />
                             </Button>
                             <Button onClick={() => setIsAddingItem(false)}>
@@ -347,3 +380,5 @@ const AdminPage = ({ eqId }) => {
 };
 
 export default AdminPage;
+
+

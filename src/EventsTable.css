@@ -5,7 +5,7 @@
 
 .eventstable-tittel {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   text-align: left;
 }
 
@@ -19,8 +19,9 @@
 
 .eventstable-h2 {
   color: grey;
-  font-size: 16px;
-  margin-top: -8px;
+  font-size: 20px;
+  margin-top: -7px;
+  margin-left: 30px;
   text-align: left;
 }
 
