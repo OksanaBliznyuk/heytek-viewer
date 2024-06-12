@@ -82,7 +82,11 @@ const EquipmentList = ({ eqId }) => {
     const fetchData = async () => {
       try {
         const response = await axios.get("http://localhost:8099/equipment");
-        setEquipment(response.data.equipment);
+        // Sorter dataene i alfabetisk rekkefølge etter equipment_name før du setter dem i state
+        const sortedEquipment = response.data.equipment.sort((a, b) =>
+          a.equipment_name.localeCompare(b.equipment_name)
+        );
+        setEquipment(sortedEquipment);
       } catch (error) {
         console.error("Error fetching equipment data:", error);
       }
