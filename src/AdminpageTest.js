@@ -1,4 +1,4 @@
-//AdminPage 05.06
+//AdminPage 12.06
 import React, { useState, useEffect } from "react";
 import "./AdminPage.css";
 import axios from "axios";
@@ -32,10 +32,17 @@ const AdminPage = ({ eqId }) => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [openModalMap, setOpenModalMap] = useState({});
   const [editingItem, setEditingItem] = useState(null);
-  const [editedData, setEditedData] = useState({});
+  const [editedData, setEditedData] = useState({
+    equipment_name: "",
+    equipment_quantity: 0,
+    equipment_descr: "",
+    equipment_img: "",
+  });
   const [deletingItem, setDeletingItem] = useState(null);
   const [isAddingItem, setIsAddingItem] = useState(false);
+  const [infoModalOpen, setInfoModalOpen] = useState(false);
 
+  // Åpne modal for informasjon om utstyret
   const handleOpen = (item, eqId, equipmentName) => {
     setSelectedItem(item);
     setCurrentEqId(eqId);
@@ -43,6 +50,7 @@ const AdminPage = ({ eqId }) => {
     setOpenModalMap((prev) => ({ ...prev, [item.equipment_id]: true }));
   };
 
+  // Hente utstyrdata fra API
   const handleClose = () => {
     setSelectedItem(null);
     setOpenModalMap((prev) => ({
@@ -56,6 +64,10 @@ const AdminPage = ({ eqId }) => {
     const fetchEquipmentData = async () => {
       try {
         const response = await axios.get("http://localhost:8099/equipment");
+        // Sortering av utstyr etter navn når dataene hentes
+        const sortedEquipment = response.data.equipment.sort((a, b) =>
+          a.equipment_name.localeCompare(b.equipment_name)
+        );
         setEquipment(response.data.equipment);
       } catch (error) {
         console.error("Error fetching equipment data:", error);
@@ -65,10 +77,12 @@ const AdminPage = ({ eqId }) => {
     fetchEquipmentData();
   }, []);
 
+  // Håndter klikk på informasjonsknapp for utstyr
   const handleButtonClick = (item) => {
     handleOpen(item);
   };
 
+  // Håndter klikk på redigeringsknapp for utstyr
   const handleEditClick = (item) => {
     setEditingItem(item);
     setEditedData({
@@ -76,89 +90,144 @@ const AdminPage = ({ eqId }) => {
       equipment_quantity: item.equipment_quantity,
       equipment_descr: item.equipment_descr,
       equipment_img: item.equipment_img,
-      // Legg til andre felt etter behov
     });
   };
 
-  // PUT/PATCH
+  // Avbryt redigering av utstyr
   const handleCancelEdit = () => {
     setEditingItem(null);
-    setEditedData({});
+    setEditedData({
+      equipment_name: "",
+      equipment_quantity: 0,
+      equipment_descr: "",
+      equipment_img: "",
+    });
   };
 
+  // Lagre endringer på utstyr PATCH
   const handleSaveClick = async (item) => {
     try {
       const response = await axios.patch(
         `http://localhost:8099/equipment/${item.equipment_id}`,
         editedData
       );
-       // Update the equipment state with the modified equipment
-       setEquipment((prevEquipment) =>
-       prevEquipment.map((equip) =>
-         equip.equipment_id === item.equipment_id ? response.data : equip
-       )
-     );
-     setEditingItem(null);
-     setEditedData({});
-     console.log("Equipment updated:", response.data);
-   } catch (error) {
-     console.error("Error updating equipment:", error);
-   }
- };
 
-// DELETE
+       // Oppdaterer utstyrslisten med de nye oppdateringene
+       const updatedEquipment = equipment.map((equip) =>
+       equip.equipment_id === item.equipment_id ? response.data : equip
+     );
+
+      // Sortering av utstyr etter navn når et element er redigert og lagret
+      const sortedEquipment = updatedEquipment.sort((a, b) =>
+        a.equipment_name.localeCompare(b.equipment_name)
+      );
+
+      // Update the equipment state with the modified equipment
+      setEquipment((prevEquipment) =>
+        prevEquipment.map((equip) =>
+          equip.equipment_id === item.equipment_id ? response.data : equip
+        )
+      );
+      setEditingItem(null);
+      setEditedData({
+        equipment_name: "",
+      equipment_quantity: 0,
+      equipment_descr: "",
+      equipment_img: "",
+      });
+      console.log("Equipment updated:", response.data);
+    } catch (error) {
+      console.error("Error updating equipment:", error);
+    }
+  };
+
+  //  Slett utstyr DELETE
   const handleDeleteItemClick = async (item) => {
     const isConfirmed = window.confirm(
       "Er du sikker på at du vil slette dette utstyret?"
     );
     if (isConfirmed) {
       try {
-        await axios.delete(`http://localhost:8099/equipment/${item.equipment_id}`);
-        setEquipment(equipment.filter((equip) => equip.equipment_id !== item.equipment_id));
+        await axios.delete(
+          `http://localhost:8099/equipment/${item.equipment_id}`
+        );
+
+         // Oppdaterer utstyrslisten etter sletting
+         const updatedEquipment = equipment.filter(
+          (equip) => equip.equipment_id !== item.equipment_id
+        );
+
+        // Sortering av utstyr etter navn når et element er slettet
+        const sortedEquipment = updatedEquipment.sort((a, b) =>
+          a.equipment_name.localeCompare(b.equipment_name)
+        );
+        setEquipment(
+          equipment.filter((equip) => equip.equipment_id !== item.equipment_id)
+        );
         console.log("Deleted equipment:", item);
       } catch (error) {
         console.error("Error deleting equipment:", error);
       }
     }
   };
+
   const handleEditFieldChange = (e, field) => {
     setEditedData((prev) => ({ ...prev, [field]: e.target.value }));
   };
 
-  const handleAddItemClick = () => {
-    setIsAddingItem(true);
-    setEditingItem({
-      equipment_name: "", 
-      equipment_quantity: 0,
-      equipment_descr: "",
-      equipment_img: "",
 
-      // ... andre felt for det nye utstyret
-    });
-
-    setEditedData({
-      equipment_name: "",
-      equipment_quantity: 0,
-      equipment_descr: "",
-      equipment_img: ""
-    });
-  };
-
-
-// POST
-const handleSaveNewItem = async () => {
-  try {
-    const response = await axios.post("http://localhost:8099/equipment", editedData);
-    // Add the new item to the equipment state
-    setEquipment((prevEquipment) => [...prevEquipment, response.data]);
-    setEditingItem(null);
-    setEditedData({});
-    setIsAddingItem(false);
-    console.log("New equipment added:", response.data);
-  } catch (error) {
-    console.error("Error adding new equipment:", error);
-  }
+  // Legg til nytt utstyr
+const handleAddItemClick = () => {
+  setIsAddingItem(true);
+  setEditedData({
+    equipment_name: "",
+    equipment_quantity: 0,
+    equipment_descr: "",
+    equipment_img: "",
+  });
 };
+
+  // Lagre nytt utstyr POST
+  const handleSaveNewItem = async () => {
+    try {
+      console.log("Saving new item with data:", editedData); // Legg til logging
+
+      const response = await axios.post(
+        "http://localhost:8099/equipment",
+        editedData
+      );
+
+       // Logger responsen fra serveren
+    console.log("Response from server:", response.data);
+
+ // Legger til det nye utstyret i utstyrslisten
+ const updatedEquipment = [...equipment, response.data];
+
+       // Sorterer utstyret etter navn hvis equipment_name er definert for det nye utstyret
+    const sortedEquipment = updatedEquipment.sort((a, b) => {
+      // Sjekker om equipment_name er definert for både a og b før sammenligning
+      if (a.equipment_name && b.equipment_name) {
+        return a.equipment_name.localeCompare(b.equipment_name);
+      } else {
+        return 0; // Returnerer 0 hvis en av verdiene mangler equipment_name
+      }
+    });
+
+      // Add the new item to the equipment state
+      setEquipment(sortedEquipment);
+      setEditingItem(null);
+      setEditedData({
+        equipment_name: "",
+        equipment_quantity: 0,
+        equipment_descr: "",
+        equipment_img: "",
+      });
+      setIsAddingItem(false);
+      console.log("New equipment added:", response.data);
+    } catch (error) {
+      console.error("Error adding new equipment:", error);
+    }
+  };
 
   return (
     <>
@@ -203,52 +272,83 @@ const handleSaveNewItem = async () => {
                 <TableBody>
                   {/*Ny rad for å legge til utstyr */}
 
-                  {isAddingItem && (
-                    <TableRow key={editingItem?.equipment_id}>
-                      <TableCell>
-                        {editingItem ? (
-                          <TextField
-                            value={editedData.equipment_name || ""}
-                            onChange={(e) =>
-                              handleEditFieldChange(e, "equipment_name")
-                            }
-                          />
-                        ) : (
-                          ""
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {editingItem ? (
-                          <TextField
-                            type="number"
-                            value={editedData.equipment_quantity || 0}
-                            onChange={(e) =>
-                              handleEditFieldChange(e, "equipment_quantity")
-                            }
-                          />
-                        ) : (
-                          ""
-                        )}
-                      </TableCell>
+                  <Modal
+                    open={isAddingItem}
+                    onClose={() => setIsAddingItem(false)}
+                    aria-labelledby="add-item-modal"
+                    aria-describedby="modal-to-add-new-equipment"
+                  >
+                    <div className="modal-container">
+                      <h2 className="adm-modal-container">
+                        Legg til nytt utstyr
+                      </h2>
+                      <TableContainer component={Paper}>
+                        <Table>
+                          <TableBody>
+                            {isAddingItem && (
+                              <TableRow className="add-row">
+                                <TableCell>
+                                  <TextField
+                                    label="Navn"
+                                    type="text"
+                                    value={editedData.equipment_name}
+                                    onChange={(e) =>
+                                      handleEditFieldChange(e, "equipment_name")
+                                    }
+                                  />
+                                </TableCell>
+                                <TableCell>
+                                  <TextField
+                                    label="Antall"
+                                    type="number"
+                                    value={editedData.equipment_quantity}
+                                    onChange={(e) =>
+                                      handleEditFieldChange(
+                                        e,
+                                        "equipment_quantity"
+                                      )
+                                    }
+                                  />
+                                </TableCell>
 
-                      {/*Ikoner i feltet */}
+                                {/* Legg til andre felt her */}
+                                <TableCell>
+                                  <div className="save-info-btn">
+                                    <Button
+                                      className="info-add-icon"
+                                      color="secondary"
+                                      variant="outlined"
+                                      size="small"
+                                      onClick={() => handleButtonClick()}
+                                    >
+                                      <InfoOutlinedIcon />
+                                    </Button>
 
-                      <TableCell>
-                        {editingItem ? (
-                          <div className="save-cancel-btn">
-                             <Button onClick={handleSaveNewItem}>
-                              <SaveIcon />
-                            </Button>
-                            <Button onClick={() => setIsAddingItem(false)}>
-                              <ClearIcon />
-                            </Button>
-                          </div>
-                        ) : (
-                          ""
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  )}
+                                    <Button
+                                      color="secondary"
+                                      variant="outlined"
+                                      size="small"
+                                      onClick={handleSaveNewItem}
+                                    >
+                                      <SaveIcon />
+                                    </Button>
+                                    <Button
+                                      color="secondary"
+                                      variant="outlined"
+                                      size="small"
+                                      onClick={() => setIsAddingItem(false)}
+                                    >
+                                      <ClearIcon />
+                                    </Button>
+                                  </div>
+                                </TableCell>
+                              </TableRow>
+                            )}
+                          </TableBody>
+                        </Table>
+                      </TableContainer>
+                    </div>
+                  </Modal>
 
                   {/*Infovindu Modal*/}
 
@@ -353,12 +453,13 @@ const handleSaveNewItem = async () => {
                         ) : (
                           <div className="edit-btn">
                             <IconButton onClick={() => handleEditClick(item)}>
-                              <CreateOutlinedIcon/>
+                              <CreateOutlinedIcon />
                             </IconButton>
                             {/* Erstatt ikonene med HambMenu */}
-                            <HambMenu eqId={item.equipment_id} selectedEquipmentName={item.equipment_name} />
-
-
+                            <HambMenu
+                              eqId={item.equipment_id}
+                              selectedEquipmentName={item.equipment_name}
+                            />
                           </div>
                         )}
                       </TableCell>
@@ -380,5 +481,3 @@ const handleSaveNewItem = async () => {
 };
 
 export default AdminPage;
-
-

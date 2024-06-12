@@ -22,7 +22,10 @@ import SaveIcon from "@mui/icons-material/Save";
 import DeleteIcon from "@mui/icons-material/Delete";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import ClearIcon from "@mui/icons-material/Clear";
+import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
+import CheckCircleOutlinedIcon from "@mui/icons-material/CheckCircleOutlined";
 import EquipmentlistBtn from "./components/EquipmentlistBtn";
+import TextareaAutosize from "@mui/material/TextareaAutosize";
 import HambMenu from "./components/HambMenu";
 
 const AdminPage = ({ eqId }) => {
@@ -41,6 +44,8 @@ const AdminPage = ({ eqId }) => {
   const [deletingItem, setDeletingItem] = useState(null);
   const [isAddingItem, setIsAddingItem] = useState(false);
   const [infoModalOpen, setInfoModalOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [imageUploaded, setImageUploaded] = useState(false);
 
   // Åpne modal for informasjon om utstyret
   const handleOpen = (item, eqId, equipmentName) => {
@@ -78,8 +83,15 @@ const AdminPage = ({ eqId }) => {
   }, []);
 
   // Håndter klikk på informasjonsknapp for utstyr
+  //const handleButtonClick = (item) => {
+  // handleOpen(item);
+  //};
+
   const handleButtonClick = (item) => {
-    handleOpen(item);
+    setSelectedItem(item);
+    setCurrentEqId(item.equipment_id);
+    setSelectedEquipmentName(item.equipment_name);
+    setOpenModalMap((prev) => ({ ...prev, [item.equipment_id]: true }));
   };
 
   // Håndter klikk på redigeringsknapp for utstyr
@@ -112,10 +124,10 @@ const AdminPage = ({ eqId }) => {
         editedData
       );
 
-       // Oppdaterer utstyrslisten med de nye oppdateringene
-       const updatedEquipment = equipment.map((equip) =>
-       equip.equipment_id === item.equipment_id ? response.data : equip
-     );
+      // Oppdaterer utstyrslisten med de nye oppdateringene
+      const updatedEquipment = equipment.map((equip) =>
+        equip.equipment_id === item.equipment_id ? response.data : equip
+      );
 
       // Sortering av utstyr etter navn når et element er redigert og lagret
       const sortedEquipment = updatedEquipment.sort((a, b) =>
@@ -131,9 +143,9 @@ const AdminPage = ({ eqId }) => {
       setEditingItem(null);
       setEditedData({
         equipment_name: "",
-      equipment_quantity: 0,
-      equipment_descr: "",
-      equipment_img: "",
+        equipment_quantity: 0,
+        equipment_descr: "",
+        equipment_img: "",
       });
       console.log("Equipment updated:", response.data);
     } catch (error) {
@@ -152,8 +164,8 @@ const AdminPage = ({ eqId }) => {
           `http://localhost:8099/equipment/${item.equipment_id}`
         );
 
-         // Oppdaterer utstyrslisten etter sletting
-         const updatedEquipment = equipment.filter(
+        // Oppdaterer utstyrslisten etter sletting
+        const updatedEquipment = equipment.filter(
           (equip) => equip.equipment_id !== item.equipment_id
         );
 
@@ -175,43 +187,46 @@ const AdminPage = ({ eqId }) => {
     setEditedData((prev) => ({ ...prev, [field]: e.target.value }));
   };
 
-
   // Legg til nytt utstyr
-const handleAddItemClick = () => {
-  setIsAddingItem(true);
-  setEditedData({
-    equipment_name: "",
-    equipment_quantity: 0,
-    equipment_descr: "",
-    equipment_img: "",
-  });
-};
+  const handleAddItemClick = () => {
+    setIsAddingItem(true);
+    setEditedData({
+      equipment_name: "",
+      equipment_quantity: 0,
+      equipment_descr: "",
+      equipment_img: "",
+    });
+  };
 
   // Lagre nytt utstyr POST
   const handleSaveNewItem = async () => {
     try {
-      console.log("Saving new item with data:", editedData); // Legg til logging
+      const formData = new FormData();
+      formData.append("equipment_name", editedData.equipment_name);
+      formData.append("equipment_quantity", editedData.equipment_quantity);
+      formData.append("equipment_descr", editedData.equipment_descr);
+      formData.append("equipment_img", editedData.equipment_img);
 
       const response = await axios.post(
         "http://localhost:8099/equipment",
         editedData
       );
 
-       // Logger responsen fra serveren
-    console.log("Response from server:", response.data);
+      // Logger responsen fra serveren
+      console.log("Response from server:", response.data);
 
- // Legger til det nye utstyret i utstyrslisten
- const updatedEquipment = [...equipment, response.data];
+      // Legger til det nye utstyret i utstyrslisten
+      const updatedEquipment = [...equipment, response.data];
 
-       // Sorterer utstyret etter navn hvis equipment_name er definert for det nye utstyret
-    const sortedEquipment = updatedEquipment.sort((a, b) => {
-      // Sjekker om equipment_name er definert for både a og b før sammenligning
-      if (a.equipment_name && b.equipment_name) {
-        return a.equipment_name.localeCompare(b.equipment_name);
-      } else {
-        return 0; // Returnerer 0 hvis en av verdiene mangler equipment_name
-      }
-    });
+      // Sorterer utstyret etter navn hvis equipment_name er definert for det nye utstyret
+      const sortedEquipment = updatedEquipment.sort((a, b) => {
+        // Sjekker om equipment_name er definert for både a og b før sammenligning
+        if (a.equipment_name && b.equipment_name) {
+          return a.equipment_name.localeCompare(b.equipment_name);
+        } else {
+          return 0; // Returnerer 0 hvis en av verdiene mangler equipment_name
+        }
+      });
 
       // Add the new item to the equipment state
       setEquipment(sortedEquipment);
@@ -227,6 +242,37 @@ const handleAddItemClick = () => {
     } catch (error) {
       console.error("Error adding new equipment:", error);
     }
+  };
+
+  // Legg til denne funksjonen under de andre hendelseshåndteringsfunksjonene
+  const handleImageChange = async (e) => {
+    const file = e.target.files[0];
+    const formData = new FormData();
+    formData.append("image", file);
+
+    try {
+      const response = await axios.post(
+        "http://localhost:8099/upload",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      // Når bildet er lastet opp, lagres bildeinformasjonen i editedData
+      setEditedData((prevData) => ({
+        ...prevData,
+        equipment_img: response.data.imageUrl,
+      }));
+
+      // Sett det opplastede bildet som kilde for forhåndsvisningen
+      setSelectedImage(response.data.imageUrl);
+    } catch (error) {
+      console.error("Error uploading image:", error);
+    }
+    setImageUploaded(true);
   };
 
   return (
@@ -311,19 +357,59 @@ const handleAddItemClick = () => {
                                   />
                                 </TableCell>
 
+                                {/*Beskrivelse og bilde*/}
+                                <TableCell>
+                                  <TextField
+                                    label="Beskrivelse"
+                                    type="text"
+                                    maxRows={10}
+                                    value={editedData.equipment_descr}
+                                    onChange={(e) =>
+                                      handleEditFieldChange(
+                                        e,
+                                        "equipment_descr"
+                                      )
+                                    }
+                                    variant="outlined"
+                                    fullWidth
+                                    InputProps={{
+                                      inputComponent: TextareaAutosize,
+                                      inputProps: {
+                                        style: {
+                                          resize: "none", // Fjerner muligheten for manuell resizing
+                                        },
+                                      },
+                                    }}
+                                  />
+                                </TableCell>
+                                <TableCell>
+                                  <div className="custom-file-upload">
+                                    <input
+                                      type="file"
+                                      onChange={(e) => handleImageChange(e)}
+                                      id="file-upload"
+                                      style={{ display: "none" }}
+                                    />
+                                    <label
+                                      htmlFor="file-upload"
+                                      className="custom-file-upload-btn"
+                                    >
+                                      <AddPhotoAlternateIcon /> Legg til bilde
+                                    </label>
+                                    {imageUploaded && (
+                                      <div className="upload-success">
+                                        <CheckCircleOutlinedIcon
+                                          style={{ color: "green" }}
+                                        />{" "}
+                                        Bilde lastet opp
+                                      </div>
+                                    )}
+                                  </div>
+                                </TableCell>
+
                                 {/* Legg til andre felt her */}
                                 <TableCell>
                                   <div className="save-info-btn">
-                                    <Button
-                                      className="info-add-icon"
-                                      color="secondary"
-                                      variant="outlined"
-                                      size="small"
-                                      onClick={() => handleButtonClick()}
-                                    >
-                                      <InfoOutlinedIcon />
-                                    </Button>
-
                                     <Button
                                       color="secondary"
                                       variant="outlined"
@@ -371,7 +457,7 @@ const handleAddItemClick = () => {
                             {selectedItem && (
                               <>
                                 <h2 id="equipment-modal-title">
-                                  {selectedItem.equipment_name}
+                                  {item.equipment_name}
                                 </h2>
 
                                 <img
@@ -382,7 +468,7 @@ const handleAddItemClick = () => {
 
                                 <div className="admin-info">
                                   <p id="equipment-modal-description">
-                                    {selectedItem.equipment_descr}
+                                    {item.equipment_descr}
                                     <Link
                                       href={`https://www.google.no/search?q=${encodeURIComponent(
                                         selectedItem.equipment_name

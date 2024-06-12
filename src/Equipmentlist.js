@@ -127,7 +127,6 @@ const EquipmentList = ({ eqId }) => {
     setEventsModalOpen(false);
   };
 
-
   return (
     <div>
       <div className="equipment-container">
@@ -155,9 +154,9 @@ const EquipmentList = ({ eqId }) => {
                 <TableCell style={{ textAlign: "center" }}>
                   <h3>Antall</h3>
                 </TableCell>
-                <TableCell style={{ textAlign: "center" }}>
+                {/*<TableCell style={{ textAlign: "center" }}>
                   <h3>Tilgjengelig</h3>
-                </TableCell>
+        </TableCell>*/}
                 <TableCell style={{ textAlign: "center" }}>
                   <h3>Reservere</h3>
                 </TableCell>
@@ -221,9 +220,9 @@ const EquipmentList = ({ eqId }) => {
                   <TableCell style={{ textAlign: "center" }}>
                     {item.equipment_quantity}
                   </TableCell>
-                  <TableCell style={{ textAlign: "center" }}>
+                  {/*<TableCell style={{ textAlign: "center" }}>
                     {item.equipment_available}
-                  </TableCell>
+                        </TableCell>*/}
                   <TableCell style={{ textAlign: "center" }}>
                     {/* Legg til EventIcon-knappen */}
                     <IconButton
