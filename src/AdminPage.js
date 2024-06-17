@@ -35,12 +35,7 @@ const AdminPage = ({ eqId }) => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [openModalMap, setOpenModalMap] = useState({});
   const [editingItem, setEditingItem] = useState(null);
-  const [editedData, setEditedData] = useState({
-    equipment_name: "",
-    equipment_quantity: 0,
-    equipment_descr: "",
-    equipment_img: "",
-  });
+  const [editedData, setEditedData] = useState({});
   const [deletingItem, setDeletingItem] = useState(null);
   const [isAddingItem, setIsAddingItem] = useState(false);
   const [infoModalOpen, setInfoModalOpen] = useState(false);
@@ -116,42 +111,50 @@ const AdminPage = ({ eqId }) => {
     });
   };
 
+//----------------------------------------
+  const handleFieldChange = (e, field) => {
+    setEditedData({ ...editedData, [field]: e.target.value });
+  };
+  //--------------------------------------
+
   // Lagre endringer på utstyr PATCH
   const handleSaveClick = async (item) => {
+    console.log("Saving item:", item);
+    console.log("Edited data:", editedData);
     try {
       const response = await axios.patch(
         `http://localhost:8099/equipment/${item.equipment_id}`,
         editedData
       );
 
+      console.log("Response from server:", response.data);
+
       // Oppdaterer utstyrslisten med de nye oppdateringene
       const updatedEquipment = equipment.map((equip) =>
-        equip.equipment_id === item.equipment_id ? response.data : equip
+      equip.equipment_id === item.equipment_id ? { ...equip, ...editedData } : equip
       );
 
-      // Sortering av utstyr etter navn når et element er redigert og lagret
-      const sortedEquipment = updatedEquipment.sort((a, b) =>
-        a.equipment_name.localeCompare(b.equipment_name)
-      );
+       // Sortering av utstyr etter navn hvis equipment_name finnes og er en streng
+    const sortedEquipment = updatedEquipment.sort((a, b) => {
+      if (a.equipment_name && b.equipment_name) {
+        return a.equipment_name.localeCompare(b.equipment_name);
+      }
+      return 0;
+    });
 
-      // Update the equipment state with the modified equipment
-      setEquipment((prevEquipment) =>
-        prevEquipment.map((equip) =>
-          equip.equipment_id === item.equipment_id ? response.data : equip
-        )
-      );
-      setEditingItem(null);
-      setEditedData({
-        equipment_name: "",
-        equipment_quantity: 0,
-        equipment_descr: "",
-        equipment_img: "",
-      });
-      console.log("Equipment updated:", response.data);
-    } catch (error) {
-      console.error("Error updating equipment:", error);
-    }
-  };
+       // Update the equipment state with the modified equipment
+    setEquipment(sortedEquipment);
+    setEditingItem(null);
+    setEditedData({
+      equipment_name: "",
+      equipment_quantity: 0,
+      equipment_descr: "",
+      equipment_img: "",
+    });
+  } catch (error) {
+    console.error("Error updating equipment:", error);
+  }
+};
 
   //  Slett utstyr DELETE
   const handleDeleteItemClick = async (item) => {
@@ -411,7 +414,7 @@ const AdminPage = ({ eqId }) => {
                                 <TableCell>
                                   <div className="save-info-btn">
                                     <Button
-                                      color="secondary"
+                                      color="primary"
                                       variant="outlined"
                                       size="small"
                                       onClick={handleSaveNewItem}
@@ -419,7 +422,7 @@ const AdminPage = ({ eqId }) => {
                                       <SaveIcon />
                                     </Button>
                                     <Button
-                                      color="secondary"
+                                      color="primary"
                                       variant="outlined"
                                       size="small"
                                       onClick={() => setIsAddingItem(false)}
